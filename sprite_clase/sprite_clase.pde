@@ -1,7 +1,5 @@
-intPUERTO_OSC  = 12345 ;
-_
-
-  Receptor receptor;
+int PUERTO_OSC  = 12345 ;
+Receptor receptor;
 
 import fisica.*;
 
@@ -28,7 +26,7 @@ PGraphics pgraphics;
 // -- Blob --
 float ultimaPosicionBlobDesaparecidoX;
 float ultimaPosicionBlobDesaparecidoY;
-//boolean blobHaEntrado = false;
+
 
 void setup() {
   size (1000, 600);
@@ -58,17 +56,17 @@ void setup() {
   mundo.add(personaje);
 
   //-----------ANDAMIOS-----------
-  puntero = new FCircle(30);
-  mundo.add(puntero);
-  puntero.setStatic(true);
-  puntero.setGrabbable(false);
+  //puntero = new FCircle(30);
+  //mundo.add(puntero);
+  //puntero.setStatic(true);
+  //puntero.setGrabbable(false);
 
-  telarana = new FDistanceJoint(personaje, puntero);
-  mundo.add(telarana);
-  telarana.setDamping(0);
-  telarana.setFrequency(2);
-  telarana.setLength(500);
-  
+  //telarana = new FDistanceJoint(personaje, puntero);
+  //mundo.add(telarana);
+  //telarana.setDamping(0);
+  //telarana.setFrequency(2);
+  //telarana.setLength(500);
+
   andamio = new Andamio();
   andamio.inicializar(andamioX, andamioY);
   mundo.add(andamio);
@@ -80,65 +78,57 @@ void draw() {
   mundo.step();
 
   pgraphics.beginDraw();
-  pgraphics.image(fondo, posf, 0, 2998, 600);
+  //pgraphics.image(fondo, posf, 0, 2998, 600);  //NO escalar
+  pgraphics.image(fondo, posf, 0);
   mundo.draw(pgraphics);
 
   pgraphics.endDraw();
 
   personaje.actualizar();
-  
+
   boolean hayBlobEnPantalla = false; //-->(NO es que quiera poner este boolean en el draw, es que sino no funciona. No me preguntes por qué. No lo sé)
 
   float xCamara = personaje.getX();
   image(pgraphics, -xCamara+100, 0);
 
-  //if (!mousePressed && puntero != null) {
-  //  mundo.remove(puntero);
-  //  puntero = null;
-  //}
-  
+  if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {
+    mundo.remove(puntero);
+    puntero = null;
+  }
+
   // -- Blob --
   for (Blob b : receptor.blobs) {
     if (b.entro) {
-      // Si un blob entra, dibujar la elipse negra
       //puntero.setDrawable(false);
       //mundo.remove(telarana);
       mundo.remove(puntero);
       receptor.dibujarBlobs();
-      //println("entro");
-      //println("Antes de establecer la posición del puntero:");
-      //println("X: " + b.ultimaPosicionBlob.x);
-      //println("Y: " + b.ultimaPosicionBlob.y);
     }
-
     if (!b.salio) {
-      // Si al menos un blob no ha salido, establece hayBlobEnPantalla en true
-      hayBlobEnPantalla = true;
+      hayBlobEnPantalla = true;  // Si al menos un blob no ha salido, establece hayBlobEnPantalla en true
     }
 
     ultimaPosicionBlobDesaparecidoX = b.ultimaPosicionBlob.x;
     ultimaPosicionBlobDesaparecidoY = b.ultimaPosicionBlob.y;
   }
 
-  if (!hayBlobEnPantalla) {
-    // Si no hay blobs en la pantalla, realizar otra acción
-    if (ultimaPosicionBlobDesaparecidoX != 0.0 && ultimaPosicionBlobDesaparecidoY != 0.0) {
-      // Establece la posición del puntero en la última posición del blob que desapareció
-      if (puntero != null) {
-        puntero.setPosition(ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
-        fill(0);
-        mundo.add(puntero);
-        mundo.add(telarana);
-      }
+  if (!hayBlobEnPantalla) {  // Si no hay blobs en la pantalla, realizar otra acción
+    if (ultimaPosicionBlobDesaparecidoX != 0.0 && ultimaPosicionBlobDesaparecidoY != 0.0) {  // Establece la posición del puntero en la última posición del blob que desapareció
+      luzDesaparece();
+
+      //if (puntero != null) {
+      //  puntero.setPosition(ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
+      //  mundo.add(puntero);
+      //  mundo.add(telarana);
+      //}
     }
-    
     println("No hay blobs en la pantalla");
-  
-  //punteroX = mouseX;
-  //punteroY = mouseY;
+  }
+
+  println( frameRate );
 }
 
-void keyPressed () {
+void keyPressed() {
   if (keyCode == LEFT) {
     personaje.izqPresionado = true;
   }
@@ -162,36 +152,68 @@ void keyReleased() {
   }
 }
 
-void mousePressed() {
+void luzDesaparece() {
 
-//  if (puntero == null) {
-//    puntero = new FCircle(30);
-//    mundo.add(puntero);
+  if (puntero == null) {
+    puntero = new FCircle(30);
+    mundo.add(puntero);
 
-//    // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
-//    float xCam = personaje.getX();
-//    punteroX = mouseX + xCam - 100; // Ajusta la posición del puntero en relación con la cámara y el personaje
-//    punteroY = mouseY;
+    // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
+    float xCam = personaje.getX();
+    punteroX = ultimaPosicionBlobDesaparecidoX + xCam - 100; // Ajusta la posición del puntero en relación con la cámara y el personaje
+    punteroY = ultimaPosicionBlobDesaparecidoY;
 
-//    puntero.setPosition(punteroX, punteroY);
-//    puntero.setStatic(true);
-//    puntero.setGrabbable(false);
-//  }
+    puntero.setPosition(punteroX, punteroY);
+    puntero.setStatic(true);
+    puntero.setGrabbable(false);
+  }
 
-//  float aIzq = andamio.getX() - 150;
-//  float aDer = andamio.getX() + 150;
-//  float aArriba = andamio.getY() - 20;
-//  float aAbajo = andamio.getY() + 20;
+  float aIzq = andamio.getX() - 150;
+  float aDer = andamio.getX() + 150;
+  float aArriba = andamio.getY() - 20;
+  float aAbajo = andamio.getY() + 20;
 
 
-//  if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
-//    telarana = new FDistanceJoint (personaje, puntero);
-//    mundo.add (telarana);
-//    telarana.setDamping (0);
-//    telarana.setFrequency(2);
-//    telarana.setLength (200);
+  if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
+    telarana = new FDistanceJoint (personaje, puntero);
+    mundo.add (telarana);
+    telarana.setDamping (0);
+    telarana.setFrequency(2);
+    telarana.setLength (200);
   }
 }
+
+void mousePressed() {
+
+  if (puntero == null) {
+    puntero = new FCircle(30);
+    mundo.add(puntero);
+
+    // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
+    float xCam = personaje.getX();
+    punteroX = mouseX + xCam - 100; // Ajusta la posición del puntero en relación con la cámara y el personaje
+    punteroY = mouseY;
+
+    puntero.setPosition(punteroX, punteroY);
+    puntero.setStatic(true);
+    puntero.setGrabbable(false);
+  }
+
+  float aIzq = andamio.getX() - 150;
+  float aDer = andamio.getX() + 150;
+  float aArriba = andamio.getY() - 20;
+  float aAbajo = andamio.getY() + 20;
+
+
+  if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
+    telarana = new FDistanceJoint (personaje, puntero);
+    mundo.add (telarana);
+    telarana.setDamping (0);
+    telarana.setFrequency(2);
+    telarana.setLength (200);
+  }
+}
+
 
 void contactStarted(FContact contact) {
   FBody body1 = contact.getBody1();
