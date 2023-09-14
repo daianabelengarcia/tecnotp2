@@ -10,6 +10,7 @@ class Blob {
   int estado;
   int estadoAnterior;
   String nombre;
+  PImage mira;
 
   boolean blobDesaparecido;
   PVector ultimaPosicionBlob;
@@ -52,6 +53,8 @@ class Blob {
 
     blobDesaparecido = false;
     ultimaPosicionBlob = new PVector(0, 0); 
+    
+    mira = loadImage("mira.png");
 
     id = -1;
     age = 0 ;
@@ -83,8 +86,9 @@ class Blob {
   }
   void cambiar() {
     if (this.nombre.equals("entrar")) {
-      fill (0);
-      ellipse (centroidX*width, centroidY*height, 50, 50);
+      //fill (0);
+      //ellipse (centroidX*width, centroidY*height, 50, 50);
+      image (mira, centroidX*width, centroidY*height, 50, 50);
 
       salio = false;
       entro = true;
@@ -118,18 +122,8 @@ class Blob {
 
     salio = ultimaActualizacion == limite_tiempo_salir ? true : false;
 
-    // Verificar si el blob ha salido de la pantalla
-    //if (centroidX < 0 || centroidX > 1 || centroidY < 0 || centroidY > 1) {
-    //  blobDesaparecido = true;
-    //  ultimaPosicionBlob.x = centroidX * width;
-    //  ultimaPosicionBlob.y = centroidY * height;
-    //}
-
-    //// Verificar si el estado cambió
-    //if (this.estado != this.estadoAnterior) {
-    //  vida = 0; // Si cambió el estado, reinicia el contador de vida
-    //}
-    //estadoAnterior = estado; // Actualiza el estado anterior con el estado actual
+    ultimaPosicionBlob.x = centroidX * width;
+    ultimaPosicionBlob.y = centroidY * height;
   }
   // -------------------------
 
@@ -167,24 +161,8 @@ class Blob {
 
   // -------------------------
 
-  void dibujar(float w, float h) {
+  void dibujar() {
     asignacion();
     cambiar();
-
-    //if (blobDesaparecido) {
-    //  // Dibuja un cuadrado rojo en la última posición del blob
-    //  fill(255, 0, 0);
-    //  rect(ultimaPosicionBlob.x, ultimaPosicionBlob.y, 40, 40);
-    //}
-
-    //float rx = centroidX * w;
-    //float ry = centroidY * h;
-
-    //fill (255, 0, 0);
-    //pushMatrix();
-    //translate(rx, ry);
-    //ellipse( 0, 0, 50, 50);
-    //popMatrix();
-    //endShape(CLOSE);
   }
 }

@@ -68,9 +68,9 @@ class Receptor { //<>//
 
   // -------------------------  
 
-  void dibujarBlobs(float w, float h) {
+  void dibujarBlobs() {
     for (Blob b : blobs) {
-      b.dibujar(w, h);
+      b.dibujar();
     }
   }
 }
