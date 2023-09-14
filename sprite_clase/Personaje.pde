@@ -45,10 +45,10 @@ class Personaje extends FBox {
       attachImage(rexCamina[indexImagenes]);
     }
     if (izqPresionado) {
-      setVelocity(-180, getVelocityY());
+      setVelocity(-90, getVelocityY());
     }
     if (derPresionado) {
-      setVelocity(180, getVelocityY());
+      setVelocity(90, getVelocityY());
     }
     if (arribaPresionado && puedeSaltar) {
       setVelocity(getVelocityX(), -200);
