@@ -5,15 +5,19 @@ Receptor receptor;
 import fisica.*;
 
 FWorld mundo;
+
 ArrayList<Plataforma> plataformas;
+
 Personaje personaje;
 
-Andamio andamio;
 FCircle puntero;
 FDistanceJoint telarana;
 
+ArrayList<Andamio> andamio;
 int andamioY = 100;
 int andamioX = 600;
+int tamax = 300;
+int tamay = 40;
 
 float punteroX;
 float punteroY;
@@ -36,7 +40,7 @@ float mx, my;
 
 void setup() {
   size (1000, 600);
-  fondo = loadImage("fondo2.png");
+  fondo = loadImage("fondo2.jpg");
   logo = loadImage("logoConDino.png");
 
   setupOSC(PUERTO_OSC);
@@ -45,38 +49,34 @@ void setup() {
   Fisica.init(this);
 
   mundo = new FWorld();
-  mundo.setGravity(0, 400);
+  mundo.setGravity(0, 800);
 
   pgraphics = createGraphics(width*3, height);
 
+  //------------PLATAFORMAS----------
   plataformas = new ArrayList <Plataforma> ();
 
-  for (int i = 0; i<5; i++) {
+  for (int i = 0; i<10; i++) {
     Plataforma p = new Plataforma (400, 40);
     p.inicializar(i*posp, height-20);
     mundo.add(p);
     plataformas.add(p);
   }
 
+  //-----------PERSONAJE----------
   personaje = new Personaje (145, 183);
-  personaje.inicializar(150, height-230);
+  personaje.inicializar(150, height-150);
   mundo.add(personaje);
 
   //-----------ANDAMIOS-----------
-  //puntero = new FCircle(30);
-  //mundo.add(puntero);
-  //puntero.setStatic(true);
-  //puntero.setGrabbable(false);
+  andamio = new ArrayList <Andamio> ();
 
-  //telarana = new FDistanceJoint(personaje, puntero);
-  //mundo.add(telarana);
-  //telarana.setDamping(0);
-  //telarana.setFrequency(2);
-  //telarana.setLength(500);
-
-  andamio = new Andamio();
-  andamio.inicializar(andamioX, andamioY);
-  mundo.add(andamio);
+  for (int i = 0; i <10; i++) {
+    Andamio a = new Andamio (300, 40);
+    a.inicializar(i*500, 100);
+    mundo.add(a);
+    andamio.add(a);
+  }
 }
 
 void draw() {
@@ -84,22 +84,13 @@ void draw() {
 
   println("contador: " + contador);
   println("estadoActual: " + estadoActual);
+  println(personaje.getX());
 
   mundo.step();
 
-  //pgraphics.beginDraw();
-  ////pgraphics.image(fondo, posf, 0, 2998, 600);  //NO escalar
-  //pgraphics.image(fondo, posf, 0);
-  //mundo.draw(pgraphics);
-
-  //pgraphics.endDraw();
-
-  //personaje.actualizar();
+  personaje.actualizar();
 
   boolean hayBlobEnPantalla = false; //-->(NO es que quiera poner este boolean en el draw, es que sino no funciona. No me preguntes por qué. No lo sé)
-
-  //float xCamara = personaje.getX();
-  //image(pgraphics, -xCamara+100, 0);
 
   if (botonPresionado) {
     estadoActual = (estadoActual % 4) + 1;
@@ -155,12 +146,13 @@ void draw() {
     pop();
   } else if (estadoActual == 2) {
     contador++;
-    //mundo.step();
+    mundo.step();
     pgraphics.beginDraw();
-    //pgraphics.image(fondo, posf, 0, 2998, 600);  //NO escalar
+    ////pgraphics.image(fondo, posf, 0, 2998, 600);  //NO escalar
     pgraphics.image(fondo, posf, 0);
     mundo.draw(pgraphics);
     pgraphics.endDraw();
+
     personaje.actualizar();
 
     float xCamara = personaje.getX();
@@ -274,18 +266,20 @@ void luzDesaparece() {
     puntero.setGrabbable(false);
   }
 
-  float aIzq = andamio.getX() - 150;
-  float aDer = andamio.getX() + 150;
-  float aArriba = andamio.getY() - 20;
-  float aAbajo = andamio.getY() + 20;
+  //----------PUNTERO SOBRE EL ANDAMIO-----------
+  for (int i = 0; i < 5; i++) {
+    float aIzq = andamio.get(i).getX() -150;
+    float aDer = andamio.get(i).getX() +150;
+    float aArriba = andamio.get(i).getY() -20;
+    float aAbajo = andamio.get(i).getY() +20;
 
-
-  if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
-    telarana = new FDistanceJoint (personaje, puntero);
-    mundo.add (telarana);
-    telarana.setDamping (0);
-    telarana.setFrequency(2);
-    telarana.setLength (200);
+    if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
+      telarana = new FDistanceJoint (personaje, puntero);
+      mundo.add (telarana);
+      telarana.setDamping (1);
+      telarana.setFrequency(1);
+      telarana.setLength (200);
+    }
   }
 }
 
@@ -306,18 +300,20 @@ void mousePressed() {
       puntero.setGrabbable(false);
     }
 
-    float aIzq = andamio.getX() - 150;
-    float aDer = andamio.getX() + 150;
-    float aArriba = andamio.getY() - 20;
-    float aAbajo = andamio.getY() + 20;
+    for (int i = 0; i < 10; i++) {
+      float aIzq = andamio.get(i).getX() -150;
+      float aDer = andamio.get(i).getX() +150;
+      float aArriba = andamio.get(i).getY() -20;
+      float aAbajo = andamio.get(i).getY() +20;
 
-
-    if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
-      telarana = new FDistanceJoint (personaje, puntero);
-      mundo.add (telarana);
-      telarana.setDamping (0);
-      telarana.setFrequency(2);
-      telarana.setLength (200);
+      if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
+        personaje.puedeSaltar = false;
+        telarana = new FDistanceJoint (personaje, puntero);
+        mundo.add (telarana);
+        telarana.setDamping (1);
+        telarana.setFrequency(1);
+        telarana.setLength (200);
+      }
     }
   }
 
@@ -330,7 +326,7 @@ void mousePressed() {
   }
 }
 
-
+//-----------SI EL DINO NO ESTÁ EN CONTACTO CON LA PLATAFORMA, NO PUEDE SALTAR (SOLO PARA LAS TECLAS)-----------
 void contactStarted(FContact contact) {
   FBody body1 = contact.getBody1();
   FBody body2 = contact.getBody2();
