@@ -44,7 +44,7 @@ class Personaje extends FBox {
     indexImagenes = (indexImagenes+1) % rexCamina.length;
     if (frameCount%30 == 0 ) {
       attachImage(rexCamina[indexImagenes]);
-      //setVelocity(90, getVelocityY());
+      //setVelocity(150, getVelocityY());
     }
     if (izqPresionado) {
       setVelocity(-90, getVelocityY());

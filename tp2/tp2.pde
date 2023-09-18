@@ -51,7 +51,7 @@ void setup() {
   mundo = new FWorld();
   mundo.setGravity(0, 800);
 
-  pgraphics = createGraphics(width*3, height);
+  pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
 
   //------------PLATAFORMAS----------
   plataformas = new ArrayList <Plataforma> ();
@@ -81,6 +81,8 @@ void setup() {
 
 void draw() {
   receptor.actualizar(mensajes);
+
+  //image(fondo, 0, 0); //Para usar sin el pgraphic descomentar esta linea
 
   println("contador: " + contador);
   println("estadoActual: " + estadoActual);
@@ -147,16 +149,23 @@ void draw() {
   } else if (estadoActual == 2) {
     contador++;
     mundo.step();
+    personaje.actualizar();
+    
+    //----------CON ESTE CÓDIGO FUNCIONA CON EL PGRAPHICS----------
     pgraphics.beginDraw();
-    ////pgraphics.image(fondo, posf, 0, 2998, 600);  //NO escalar
     pgraphics.image(fondo, posf, 0);
     mundo.draw(pgraphics);
     pgraphics.endDraw();
 
-    personaje.actualizar();
-
     float xCamara = personaje.getX();
     image(pgraphics, -xCamara+100, 0);
+
+    //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
+    //float xCamara = personaje.getX();
+    //pushMatrix();
+    //translate(-xCamara + 100, 0);
+    //mundo.draw();  
+    //popMatrix();
 
     if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {
       mundo.remove(puntero);
@@ -300,8 +309,9 @@ void mousePressed() {
       puntero.setGrabbable(false);
     }
 
+//---------------PUNTERO SOBRE EL ANDAMIO----------
     for (int i = 0; i < 10; i++) {
-      float aIzq = andamio.get(i).getX() -150;
+      float aIzq = andamio.get(i).getX() -150; 
       float aDer = andamio.get(i).getX() +150;
       float aArriba = andamio.get(i).getY() -20;
       float aAbajo = andamio.get(i).getY() +20;
