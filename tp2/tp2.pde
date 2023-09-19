@@ -24,6 +24,7 @@ float punteroY;
 
 PImage fondo;
 PImage logo;
+PImage mira;
 int posp = 600;
 int posf = 0;
 int contador = 0;
@@ -39,6 +40,7 @@ boolean botonPresionado = false;
 float mx, my;
 
 void setup() {
+
   size (1000, 600);
   fondo = loadImage("fondo2.jpg");
   logo = loadImage("logoConDino.png");
@@ -99,15 +101,11 @@ void draw() {
     botonPresionado = false;
   }
 
-  if (estadoActual == 1 || estadoActual == 2) {
-    receptor.dibujarBlobs();
-  }
-
-  // -- Blob --
+  // -- Blob (Luz) --
   for (Blob b : receptor.blobs) {
     if (b.entro) {
       //puntero.setDrawable(false);
-      //mundo.remove(telarana);
+      mundo.remove(telarana);
       mundo.remove(puntero);
       receptor.dibujarBlobs();
     }
@@ -115,11 +113,12 @@ void draw() {
       hayBlobEnPantalla = true;  // Si al menos un blob no ha salido, establece hayBlobEnPantalla en true
     }
 
+    // Variables que calculan la última posición de la luz antes de desaparecer
     ultimaPosicionBlobDesaparecidoX = b.ultimaPosicionBlob.x;
     ultimaPosicionBlobDesaparecidoY = b.ultimaPosicionBlob.y;
   }
 
-  // Botones
+  // Botones que funcionan con la luz
   if (!hayBlobEnPantalla) {
     if (estadoActual == 1 && (ultimaPosicionBlobDesaparecidoX > width/2-50 && ultimaPosicionBlobDesaparecidoX < width/2+50 && ultimaPosicionBlobDesaparecidoY > (height/2+150)-25 && ultimaPosicionBlobDesaparecidoY < (height/2+150)+25)) {
       botonPresionado = true;
@@ -129,7 +128,8 @@ void draw() {
     }
   }
 
-  if (estadoActual == 1) {
+  if (estadoActual == 1) {  // ---> PANTALLA DE INICIO
+
     fill(0);
     rect(0, 0, width, height);
     push();
@@ -146,11 +146,13 @@ void draw() {
     textMode(CENTER);
     text("Dispare una telaraña aquí para empezar", width/2-110, height/2+100);
     pop();
-  } else if (estadoActual == 2) {
-    contador++;
+    receptor.dibujarBlobs();
+  } else if (estadoActual == 2) {  // ---> EL JUEGO
+
+    contador++;   // --> (Esto no sirve de mucho. Solo lo tengo para saber cuando funciona y cuando no el estado 2, es decir, el juego)
     mundo.step();
     personaje.actualizar();
-    
+
     //----------CON ESTE CÓDIGO FUNCIONA CON EL PGRAPHICS----------
     pgraphics.beginDraw();
     pgraphics.image(fondo, posf, 0);
@@ -159,6 +161,7 @@ void draw() {
 
     float xCamara = personaje.getX();
     image(pgraphics, -xCamara+100, 0);
+
 
     //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
     //float xCamara = personaje.getX();
@@ -172,13 +175,14 @@ void draw() {
       puntero = null;
     }
 
-    if (!hayBlobEnPantalla) {  // Si no hay blobs en la pantalla, realizar otra acción
+    if (!hayBlobEnPantalla) {  // Si no hay blobs en la pantalla, se crea el puntero
       if (ultimaPosicionBlobDesaparecidoX != 0.0 && ultimaPosicionBlobDesaparecidoY != 0.0) {  // Establece la posición del puntero en la última posición del blob que desapareció
         luzDesaparece();
       }
       //println("No hay blobs en la pantalla");
     }
-  } else if (estadoActual == 3) {
+    receptor.dibujarBlobs();
+  } else if (estadoActual == 3) {   // ---> PANTALLA DE GANAR
     fill(0);
     rect(0, 0, width, height);
 
@@ -201,7 +205,9 @@ void draw() {
     textSize(14);
     text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
     pop();
-  } else if (estadoActual == 4) {
+    receptor.dibujarBlobs();
+  } else if (estadoActual == 4) {   // ---> PANTALLA DE PERDER
+
     fill(0);
     rect(0, 0, width, height);
 
@@ -224,6 +230,7 @@ void draw() {
     textSize(14);
     text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
     pop();
+    receptor.dibujarBlobs();
   }
 
   println("frameRate: " + frameRate );
@@ -263,6 +270,13 @@ void luzDesaparece() {
 
   if (puntero == null) {
     puntero = new FCircle(30);
+    puntero.setNoFill();
+
+    //puntero.setFill(255, 100, 100);  // ---> Formas de personalizar FCircle, FBox o cualquier objeto de Fisica.
+    //puntero.setNoStroke();           //      Lo comenté para tenerlo a mano, por las dudas
+    //puntero.setStrokeWeight(5);
+    //puntero.setStroke(255, 0, 50);
+
     mundo.add(puntero);
 
     // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
@@ -297,6 +311,7 @@ void mousePressed() {
   if (estadoActual == 2) {
     if (puntero == null) {
       puntero = new FCircle(30);
+      puntero.setNoFill();
       mundo.add(puntero);
 
       // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
@@ -309,7 +324,7 @@ void mousePressed() {
       puntero.setGrabbable(false);
     }
 
-//---------------PUNTERO SOBRE EL ANDAMIO----------
+    //---------------PUNTERO SOBRE EL ANDAMIO----------
     for (int i = 0; i < 10; i++) {
       float aIzq = andamio.get(i).getX() -150; 
       float aDer = andamio.get(i).getX() +150;
@@ -327,7 +342,7 @@ void mousePressed() {
     }
   }
 
-  // Botones
+  // Botones que funcionan con el mouse
   if (estadoActual == 1 && (mouseX > width/2-50 && mouseX < width/2+50 && mouseY > (height/2+150)-25 && mouseY < (height/2+150)+25)) {
     botonPresionado = true;
   }
@@ -346,6 +361,39 @@ void contactStarted(FContact contact) {
         personaje.puedeSaltar = true;
       } else if (body2.getName() == "personaje" && contact.getNormalY() < 0) {
         personaje.puedeSaltar = true;
+      }
+    } else {
+      estadoActual = 4;  //  Aparece la pantalla de perdiste
+      // Se reinicia el juego      ----> (No sé si de esta forma eventualmente se va a romper todo, pero por ahora funciona)
+      contador = 0;
+      mundo = new FWorld();
+      mundo.setGravity(0, 800);
+
+      pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
+
+      //------------PLATAFORMAS----------
+      plataformas = new ArrayList <Plataforma> ();
+
+      for (int i = 0; i<10; i++) {
+        Plataforma p = new Plataforma (400, 40);
+        p.inicializar(i*posp, height-20);
+        mundo.add(p);
+        plataformas.add(p);
+      }
+
+      //-----------PERSONAJE----------
+      personaje = new Personaje (145, 183);
+      personaje.inicializar(150, height-150);
+      mundo.add(personaje);
+
+      //-----------ANDAMIOS-----------
+      andamio = new ArrayList <Andamio> ();
+
+      for (int i = 0; i <10; i++) {
+        Andamio a = new Andamio (300, 40);
+        a.inicializar(i*500, 100);
+        mundo.add(a);
+        andamio.add(a);
       }
     }
   }
