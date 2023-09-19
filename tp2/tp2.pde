@@ -10,7 +10,7 @@ ArrayList<Plataforma> plataformas;
 
 Personaje personaje;
 
-FCircle puntero;
+FBox puntero;
 FDistanceJoint telarana;
 
 ArrayList<Andamio> andamio;
@@ -25,6 +25,7 @@ float punteroY;
 PImage fondo;
 PImage logo;
 PImage mira;
+PImage tela;
 int posp = 600;
 int posf = 0;
 int contador = 0;
@@ -44,6 +45,7 @@ void setup() {
   size (1000, 600);
   fondo = loadImage("fondo2.jpg");
   logo = loadImage("logoConDino.png");
+  tela = loadImage("telarana.png");
 
   setupOSC(PUERTO_OSC);
   receptor = new Receptor();
@@ -269,8 +271,8 @@ void keyReleased() {
 void luzDesaparece() {
 
   if (puntero == null) {
-    puntero = new FCircle(30);
-    puntero.setNoFill();
+    puntero = new FBox(20, 20);
+    puntero.attachImage(tela);
 
     //puntero.setFill(255, 100, 100);  // ---> Formas de personalizar FCircle, FBox o cualquier objeto de Fisica.
     //puntero.setNoStroke();           //      Lo comenté para tenerlo a mano, por las dudas
@@ -310,8 +312,8 @@ void mousePressed() {
 
   if (estadoActual == 2) {
     if (puntero == null) {
-      puntero = new FCircle(30);
-      puntero.setNoFill();
+      puntero = new FBox(20, 20);
+      puntero.attachImage(tela);
       mundo.add(puntero);
 
       // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
