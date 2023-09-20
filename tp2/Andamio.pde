@@ -6,8 +6,8 @@ class Andamio extends FBox {
   void inicializar (int andamioX, int andamioY) {
   setPosition (andamioX, andamioY);
   setStatic (true);
-  //andamio.setDensity(10);
-  //andamio.setRotatable(false);
-  //andamio.setGrabbable (false);
+  setDensity(0);
+  setRotatable(false);
+  setGrabbable (false);
   }
 }

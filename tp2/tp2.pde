@@ -12,6 +12,7 @@ Personaje personaje;
 
 FBox puntero;
 FDistanceJoint telarana;
+boolean hayTelarana;
 
 ArrayList<Andamio> andamio;
 int andamioY = 100;
@@ -26,11 +27,11 @@ PImage fondo;
 PImage logo;
 PImage mira;
 PImage tela;
-int posp = 600;
+int posp = 1000;
 int posf = 0;
 int contador = 0;
 
-PGraphics pgraphics;
+//PGraphics pgraphics;
 
 // -- Blob --
 float ultimaPosicionBlobDesaparecidoX;
@@ -55,13 +56,13 @@ void setup() {
   mundo = new FWorld();
   mundo.setGravity(0, 800);
 
-  pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
+  // pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
 
   //------------PLATAFORMAS----------
   plataformas = new ArrayList <Plataforma> ();
 
   for (int i = 0; i<10; i++) {
-    Plataforma p = new Plataforma (400, 40);
+    Plataforma p = new Plataforma (800, 40);
     p.inicializar(i*posp, height-20);
     mundo.add(p);
     plataformas.add(p);
@@ -69,7 +70,7 @@ void setup() {
 
   //-----------PERSONAJE----------
   personaje = new Personaje (145, 183);
-  personaje.inicializar(150, height-150);
+  personaje.inicializar(-300, height-150);
   mundo.add(personaje);
 
   //-----------ANDAMIOS-----------
@@ -81,20 +82,19 @@ void setup() {
     mundo.add(a);
     andamio.add(a);
   }
+  hayTelarana = false;
 }
 
 void draw() {
   receptor.actualizar(mensajes);
 
-  //image(fondo, 0, 0); //Para usar sin el pgraphic descomentar esta linea
+  image(fondo, 0, 0); //Para usar sin el pgraphic descomentar esta linea
 
   println("contador: " + contador);
   println("estadoActual: " + estadoActual);
   println(personaje.getX());
 
   mundo.step();
-
-  personaje.actualizar();
 
   boolean hayBlobEnPantalla = false; //-->(NO es que quiera poner este boolean en el draw, es que sino no funciona. No me preguntes por qué. No lo sé)
 
@@ -152,25 +152,22 @@ void draw() {
   } else if (estadoActual == 2) {  // ---> EL JUEGO
 
     contador++;   // --> (Esto no sirve de mucho. Solo lo tengo para saber cuando funciona y cuando no el estado 2, es decir, el juego)
-    mundo.step();
     personaje.actualizar();
 
     //----------CON ESTE CÓDIGO FUNCIONA CON EL PGRAPHICS----------
-    pgraphics.beginDraw();
-    pgraphics.image(fondo, posf, 0);
-    mundo.draw(pgraphics);
-    pgraphics.endDraw();
+    //pgraphics.beginDraw();
+    //pgraphics.image(fondo, posf, 0);
+    //mundo.draw(pgraphics);
+    //pgraphics.endDraw();
 
-    float xCamara = personaje.getX();
-    image(pgraphics, -xCamara+100, 0);
+    //float xCamara = personaje.getX();
+    //image(pgraphics, -xCamara+100, 0);
 
 
     //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
-    //float xCamara = personaje.getX();
-    //pushMatrix();
-    //translate(-xCamara + 100, 0);
-    //mundo.draw();  
-    //popMatrix();
+    float xCamara = personaje.getX();
+    translate(-xCamara + 100, 0);
+    mundo.draw();
 
     if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {
       mundo.remove(puntero);
@@ -292,7 +289,7 @@ void luzDesaparece() {
   }
 
   //----------PUNTERO SOBRE EL ANDAMIO-----------
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 10; i++) {
     float aIzq = andamio.get(i).getX() -150;
     float aDer = andamio.get(i).getX() +150;
     float aArriba = andamio.get(i).getY() -20;
@@ -301,9 +298,10 @@ void luzDesaparece() {
     if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
       telarana = new FDistanceJoint (personaje, puntero);
       mundo.add (telarana);
-      telarana.setDamping (1);
+      telarana.setDamping (0.3);
       telarana.setFrequency(1);
       telarana.setLength (200);
+      hayTelarana = true;
     }
   }
 }
@@ -328,7 +326,7 @@ void mousePressed() {
 
     //---------------PUNTERO SOBRE EL ANDAMIO----------
     for (int i = 0; i < 10; i++) {
-      float aIzq = andamio.get(i).getX() -150; 
+      float aIzq = andamio.get(i).getX() -150;
       float aDer = andamio.get(i).getX() +150;
       float aArriba = andamio.get(i).getY() -20;
       float aAbajo = andamio.get(i).getY() +20;
@@ -337,9 +335,10 @@ void mousePressed() {
         personaje.puedeSaltar = false;
         telarana = new FDistanceJoint (personaje, puntero);
         mundo.add (telarana);
-        telarana.setDamping (1);
+        telarana.setDamping (0.3);
         telarana.setFrequency(1);
         telarana.setLength (200);
+        hayTelarana = true;
       }
     }
   }
@@ -371,13 +370,13 @@ void contactStarted(FContact contact) {
       mundo = new FWorld();
       mundo.setGravity(0, 800);
 
-      pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
+      //pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
 
       //------------PLATAFORMAS----------
       plataformas = new ArrayList <Plataforma> ();
 
       for (int i = 0; i<10; i++) {
-        Plataforma p = new Plataforma (400, 40);
+        Plataforma p = new Plataforma (800, 40);
         p.inicializar(i*posp, height-20);
         mundo.add(p);
         plataformas.add(p);
