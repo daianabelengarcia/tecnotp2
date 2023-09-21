@@ -4,7 +4,7 @@ class Blob {
   boolean entro;
   boolean salio;
 
-  int vida;
+  float vida;
   int ultimaActualizacion;
   int limite_tiempo_salir;
   int estado;
@@ -87,7 +87,7 @@ class Blob {
     }
   }
   void cambiar() {
-    //if (this.nombre.equals("entrar")) {
+    if (this.nombre.equals("entrar")) {
       //fill (0);
       //ellipse (centroidX*width, centroidY*height, 50, 50);
       image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
@@ -100,9 +100,18 @@ class Blob {
       salio = false;
       entro = true;
       vida++;
-    //} 
+      this.estado = 1;
+    } else if (this.nombre.equals("salir")) {
+      fill (255, 0, 0);
+      rect (centroidX*width, centroidY*height, 40, 40);
 
-    // Verificar si el estado cambió
+      vida = 0;
+      salio = true;
+      entro = false;
+      this.estado = 2;
+    }
+   
+// Verificar si el estado cambió
     if (this.estado != this.estadoAnterior) {
       vida = 0; // Si cambió el estado, reinicia el contador de vida
     }
@@ -112,11 +121,14 @@ class Blob {
   // -------------------------
 
   void actualizar() {
+
     if (vida > 0) {
       entro = true;
     }
     vida++;
     vida = vida % 100;
+    
+    println("vida: "+vida);
 
     salio = ultimaActualizacion == limite_tiempo_salir ? true : false;
 

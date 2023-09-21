@@ -1,4 +1,3 @@
-
 int PUERTO_OSC  = 12345 ;
 Receptor receptor;
 
@@ -6,22 +5,37 @@ import fisica.*;
 
 FWorld mundo;
 
-ArrayList<Plataforma> plataformas;
-
 Personaje personaje;
 
 FBox puntero;
+float punteroX;
+float punteroY;
+
 FDistanceJoint telarana;
 boolean hayTelarana;
 
-ArrayList<Andamio> andamio;
+Andamio andamio;
+Andamio andamio2;
+float velocidad = 5;
 int andamioY = 100;
-int andamioX = 600;
-int tamax = 300;
+int andamioX = 500;
+int tamax = 400;
 int tamay = 40;
 
-float punteroX;
-float punteroY;
+float aIzq; //bordes andamios
+float aDer;
+float aArriba;
+float aAbajo;
+
+float aIzq2;
+float aDer2;
+float aArriba2;
+float aAbajo2; //hasta acá
+
+
+Plataforma plataforma;
+Plataforma plataforma3;
+float velplataforma = 3;
 
 PImage fondo;
 PImage logo;
@@ -31,13 +45,11 @@ int posp = 1000;
 int posf = 0;
 int contador = 0;
 
-//PGraphics pgraphics;
-
 // -- Blob --
 float ultimaPosicionBlobDesaparecidoX;
 float ultimaPosicionBlobDesaparecidoY;
 
-int estadoActual = 1;
+int estadoActual = 2;
 boolean botonPresionado = false;
 float mx, my;
 
@@ -54,49 +66,68 @@ void setup() {
   Fisica.init(this);
 
   mundo = new FWorld();
+  mundo.setEdges(0, 0, 1000, 1000);
   mundo.setGravity(0, 800);
 
   // pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
 
   //------------PLATAFORMAS----------
-  plataformas = new ArrayList <Plataforma> ();
+  //plataformas = new ArrayList <Plataforma> ();
 
-  for (int i = 0; i<10; i++) {
-    Plataforma p = new Plataforma (800, 40);
-    p.inicializar(i*posp, height-20);
-    mundo.add(p);
-    plataformas.add(p);
-  }
+  //for (int i = 0; i<10; i++) {
+  //  Plataforma p = new Plataforma (800, 40);
+  //  p.inicializar(i*posp, height-20);
+  //  mundo.add(p);
+  //  plataformas.add(p);
+  //}
+  plataforma = new Plataforma (1200, 40);
+  plataforma.inicializar(0, height-20);
+  mundo.add(plataforma);
+
+  plataforma3 = new Plataforma (1200, 80);
+  plataforma3.inicializar(1500, height-40);
+  mundo.add(plataforma3);
 
   //-----------PERSONAJE----------
   personaje = new Personaje (145, 183);
-  personaje.inicializar(-300, height-150);
+  personaje.inicializar(150, height-150);
   mundo.add(personaje);
 
   //-----------ANDAMIOS-----------
-  andamio = new ArrayList <Andamio> ();
+  //andamio = new ArrayList <Andamio> ();
 
-  for (int i = 0; i <10; i++) {
-    Andamio a = new Andamio (300, 40);
-    a.inicializar(i*500, 100);
-    mundo.add(a);
-    andamio.add(a);
-  }
+  //for (int i = 0; i <10; i++) {
+  //  Andamio a = new Andamio (300, 40);
+  //  a.inicializar(i*600, 100);
+  //  mundo.add(a);
+  //  andamio.add(a);
+  //}
+  andamio = new Andamio(tamax, tamay);
+  andamio.inicializar(andamioX, andamioY);
+  mundo.add(andamio);
+  andamio2 = new Andamio(tamax, tamay);
+  andamio2.inicializar(1200, 100);
+  mundo.add(andamio2);
+
   hayTelarana = false;
 }
 
 void draw() {
   receptor.actualizar(mensajes);
+  
+  mundo.step();
 
-  image(fondo, 0, 0); //Para usar sin el pgraphic descomentar esta linea
+  image(fondo, posf, 0); //Para usar sin el pgraphic descomentar esta linea
+  
+  mundo.draw();
 
   println("contador: " + contador);
   println("estadoActual: " + estadoActual);
   println(personaje.getX());
 
-  mundo.step();
+  
   personaje.actualizar();
-  //mundo.draw();
+
 
   boolean hayBlobEnPantalla = false; //-->(NO es que quiera poner este boolean en el draw, es que sino no funciona. No me preguntes por qué. No lo sé)
 
@@ -154,7 +185,25 @@ void draw() {
   } else if (estadoActual == 2) {  // ---> EL JUEGO
 
     contador++;   // --> (Esto no sirve de mucho. Solo lo tengo para saber cuando funciona y cuando no el estado 2, es decir, el juego)
+    posf--;
+    if (posf <= -5000) {
+      posf = 0;
+    }
     personaje.actualizar();
+    andamio.actualizar(velocidad);
+    andamio2.actualizar(velocidad);
+    //for (Andamio a : andamio) {
+    //  a.actualizar(velocidad);
+    //}
+    plataforma.actualizar(velplataforma);
+    plataforma3.actualizar(velplataforma);
+
+    //if (personaje.getY() >= height+100) {
+    //  estadoActual = 4;
+    //  borrar();
+    //  reiniciar();
+    //}
+
 
     //----------CON ESTE CÓDIGO FUNCIONA CON EL PGRAPHICS----------
     //pgraphics.beginDraw();
@@ -167,16 +216,15 @@ void draw() {
 
 
     //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
-    float xCamara = personaje.getX();
-    translate(-xCamara + 100, 0);
-    mundo.draw();
-    
-    //personaje.actualizar();
+    //float xCamara = personaje.getX();
+    //translate(-xCamara + 100, 0);
+    //mundo.draw();
 
     if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {
       mundo.remove(puntero);
       puntero = null;
     }
+
 
     if (!hayBlobEnPantalla) {  // Si no hay blobs en la pantalla, se crea el puntero
       if (ultimaPosicionBlobDesaparecidoX != 0.0 && ultimaPosicionBlobDesaparecidoY != 0.0) {  // Establece la posición del puntero en la última posición del blob que desapareció
@@ -184,7 +232,7 @@ void draw() {
       }
       //println("No hay blobs en la pantalla");
     }
-    //receptor.dibujarBlobs();
+    receptor.dibujarBlobs();
   } else if (estadoActual == 3) {   // ---> PANTALLA DE GANAR
     fill(0);
     rect(0, 0, width, height);
@@ -208,7 +256,7 @@ void draw() {
     textSize(14);
     text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
     pop();
-    receptor.dibujarBlobs();
+   receptor.dibujarBlobs();
   } else if (estadoActual == 4) {   // ---> PANTALLA DE PERDER
 
     fill(0);
@@ -237,8 +285,6 @@ void draw() {
   }
 
   println("frameRate: " + frameRate );
-
-
 }
 
 void keyPressed() {
@@ -286,7 +332,7 @@ void luzDesaparece() {
 
     // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
     float xCam = personaje.getX();
-    punteroX = ultimaPosicionBlobDesaparecidoX + xCam - 100; // Ajusta la posición del puntero en relación con la cámara y el personaje
+    punteroX = ultimaPosicionBlobDesaparecidoX ; // Ajusta la posición del puntero en relación con la cámara y el personaje
     punteroY = ultimaPosicionBlobDesaparecidoY;
 
     puntero.setPosition(punteroX, punteroY);
@@ -295,20 +341,25 @@ void luzDesaparece() {
   }
 
   //----------PUNTERO SOBRE EL ANDAMIO-----------
-  for (int i = 0; i < 10; i++) {
-    float aIzq = andamio.get(i).getX() -150;
-    float aDer = andamio.get(i).getX() +150;
-    float aArriba = andamio.get(i).getY() -20;
-    float aAbajo = andamio.get(i).getY() +20;
+  aIzq = andamio.getX() -150;
+  aDer = andamio.getX() +150;
+  aArriba = andamio.getY() -20;
+  aAbajo = andamio.getY() +20;
 
-    if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
-      telarana = new FDistanceJoint (personaje, puntero);
-      mundo.add (telarana);
-      telarana.setDamping (0.3);
-      telarana.setFrequency(1);
-      telarana.setLength (200);
-      hayTelarana = true;
-    }
+  aIzq2 = andamio2.getX() -150;
+  aDer2 = andamio2.getX() +150;
+  aArriba2 = andamio2.getY() -20;
+  aAbajo2 = andamio2.getY() +20;
+
+
+
+  if ((punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) || (punteroX >= aIzq2 && punteroX <= aDer2 && punteroY >= aArriba2 && punteroY <= aAbajo2)) {      
+    telarana = new FDistanceJoint (personaje, puntero);
+    mundo.add (telarana);
+    telarana.setDamping (1);
+    telarana.setFrequency(2);
+    telarana.setLength (200);
+    hayTelarana = true;
   }
 }
 
@@ -322,7 +373,7 @@ void mousePressed() {
 
       // Ajustar las coordenadas del puntero en función de la posición de la cámara y el personaje
       float xCam = personaje.getX();
-      punteroX = mouseX + xCam - 100; // Ajusta la posición del puntero en relación con la cámara y el personaje
+      punteroX = mouseX ; // Ajusta la posición del puntero en relación con la cámara y el personaje
       punteroY = mouseY;
 
       puntero.setPosition(punteroX, punteroY);
@@ -331,21 +382,25 @@ void mousePressed() {
     }
 
     //---------------PUNTERO SOBRE EL ANDAMIO----------
-    for (int i = 0; i < 10; i++) {
-      float aIzq = andamio.get(i).getX() -150;
-      float aDer = andamio.get(i).getX() +150;
-      float aArriba = andamio.get(i).getY() -20;
-      float aAbajo = andamio.get(i).getY() +20;
+    aIzq = andamio.getX() -150;
+    aDer = andamio.getX() +150;
+    aArriba = andamio.getY() -20;
+    aAbajo = andamio.getY() +20;
 
-      if (punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) {
-        personaje.puedeSaltar = false;
-        telarana = new FDistanceJoint (personaje, puntero);
-        mundo.add (telarana);
-        telarana.setDamping (0.3);
-        telarana.setFrequency(1);
-        telarana.setLength (200);
-        hayTelarana = true;
-      }
+    aIzq2 = andamio2.getX() -150;
+    aDer2 = andamio2.getX() +150;
+    aArriba2 = andamio2.getY() -20;
+    aAbajo2 = andamio2.getY() +20;
+
+
+
+    if ((punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) || (punteroX >= aIzq2 && punteroX <= aDer2 && punteroY >= aArriba2 && punteroY <= aAbajo2)) {      
+      telarana = new FDistanceJoint (personaje, puntero);
+      mundo.add (telarana);
+      telarana.setDamping (1);
+      telarana.setFrequency(2);
+      telarana.setLength (200);
+      hayTelarana = true;
     }
   }
 
@@ -369,39 +424,82 @@ void contactStarted(FContact contact) {
       } else if (body2.getName() == "personaje" && contact.getNormalY() < 0) {
         personaje.puedeSaltar = true;
       }
-    } else {
-      estadoActual = 4;  //  Aparece la pantalla de perdiste
-      // Se reinicia el juego      ----> (No sé si de esta forma eventualmente se va a romper todo, pero por ahora funciona)
-      //contador = 0;
-      //mundo = new FWorld();
-      //mundo.setGravity(0, 800);
-
-      ////pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
-
-      ////------------PLATAFORMAS----------
-      //plataformas = new ArrayList <Plataforma> ();
-
-      //for (int i = 0; i<10; i++) {
-      //  Plataforma p = new Plataforma (800, 40);
-      //  p.inicializar(i*posp, height-20);
-      //  mundo.add(p);
-      //  plataformas.add(p);
-      //}
-
-      ////-----------PERSONAJE----------
-      //personaje = new Personaje (145, 183);
-      //personaje.inicializar(150, height-150);
-      //mundo.add(personaje);
-
-      ////-----------ANDAMIOS-----------
-      //andamio = new ArrayList <Andamio> ();
-
-      //for (int i = 0; i <10; i++) {
-      //  Andamio a = new Andamio (300, 40);
-      //  a.inicializar(i*500, 100);
-      //  mundo.add(a);
-      //  andamio.add(a);
-      //}
     }
   }
+}
+//else {
+//      estadoActual = 4;  //  Aparece la pantalla de perdiste
+//      // Se reinicia el juego      ----> (No sé si de esta forma eventualmente se va a romper todo, pero por ahora funciona)
+//      contador = 0;
+//      mundo = new FWorld();
+//      mundo.setGravity(0, 800);
+
+//      //pgraphics = createGraphics(width*3, height); //Para borrar el pgraphics comentar también esta linea
+
+//      //------------PLATAFORMAS----------
+//      //plataformas = new ArrayList <Plataforma> ();
+
+//      //for (int i = 0; i<10; i++) {
+//      //  Plataforma p = new Plataforma (800, 40);
+//      //  p.inicializar(i*posp, height-20);
+//      //  mundo.add(p);
+//      //  plataformas.add(p);
+//      //}
+
+//      //-----------PERSONAJE----------
+//      personaje = new Personaje (145, 183);
+//      personaje.inicializar(150, height-150);
+//      mundo.add(personaje);
+
+//      //-----------ANDAMIOS-----------
+//      //andamio = new ArrayList <Andamio> ();
+
+//      //for (int i = 0; i <10; i++) {
+//      //  Andamio a = new Andamio (300, 40);
+//      //  a.inicializar(i*500, 100);
+//      //  mundo.add(a);
+//      //  andamio.add(a);
+//      //}
+//      //andamio = new Andamio (tamax, tamay);
+//      //andamio.inicializar(andamioX, andamioY);
+//      //mundo.add(andamio);
+//    }
+//  }
+//}
+void reiniciar() {
+  contador = 0;
+  //mundo = new FWorld();
+  mundo.setEdges(0, 0, 1000, 1000);
+  mundo.setGravity(0, 800);
+  
+  //------------PLATAFORMAS----------
+  plataforma = new Plataforma (1200, 40);
+  plataforma.inicializar(0, height-20);
+  mundo.add(plataforma);
+
+  plataforma3 = new Plataforma (1200, 80);
+  plataforma3.inicializar(1500, height-40);
+  mundo.add(plataforma3);
+
+  //-----------PERSONAJE----------
+  personaje = new Personaje (145, 183);
+  personaje.inicializar(150, height-150);
+  mundo.add(personaje);
+
+  //-----------ANDAMIOS-----------
+  andamio = new Andamio(tamax, tamay);
+  andamio.inicializar(andamioX, andamioY);
+  mundo.add(andamio);
+  andamio2 = new Andamio(tamax, tamay);
+  andamio2.inicializar(1200, 100);
+  mundo.add(andamio2);
+
+  hayTelarana = false;
+}
+void borrar(){
+  mundo.remove(plataforma);
+  mundo.remove(plataforma3);
+  mundo.remove(personaje);
+  mundo.remove(andamio);
+  mundo.remove(andamio2);
 }
