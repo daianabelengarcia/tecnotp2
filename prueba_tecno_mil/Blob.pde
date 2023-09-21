@@ -4,7 +4,7 @@ class Blob {
   boolean entro;
   boolean salio;
 
-  float vida;
+  int vida;
   int ultimaActualizacion;
   int limite_tiempo_salir;
   int estado;
@@ -37,8 +37,7 @@ class Blob {
 
   ArrayList <Float> contorno;
 
-  Blob (int estado ) {
-
+  Blob(int estado) {
 
     entro =  false;    // No me terminan de cerrar los boolean "entro" y "salio". No funcionan bien.
     actualizado = false;
@@ -55,7 +54,7 @@ class Blob {
     blobDesaparecido = false;
     ultimaPosicionBlob = new PVector(0, 0); 
 
-    mira = loadImage("mira3.png");
+    mira = loadImage("mira2.png");
 
     id = -1;
     age = 0 ;
@@ -77,7 +76,6 @@ class Blob {
 
     contorno = new ArrayList<Float>();
   }
-
   // -------------------------
   void asignacion() {
     if (this.estado == 1) {
@@ -90,13 +88,7 @@ class Blob {
     if (this.nombre.equals("entrar")) {
       //fill (0);
       //ellipse (centroidX*width, centroidY*height, 50, 50);
-      //image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
-      image(mira,centroidX*width, centroidY*height,50,50);
-      //PGraphics miraPG = createGraphics(mira.width, mira.height);
-      //miraPG.beginDraw();
-      //miraPG.image(mira, 0, 0);
-      //miraPG.endDraw();
-      //image(miraPG, centroidX*width -25, centroidY*height-25, 50, 50);
+      image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
 
       salio = false;
       entro = true;
@@ -111,8 +103,8 @@ class Blob {
       entro = false;
       this.estado = 2;
     }
-   
-// Verificar si el estado cambió
+
+    // Verificar si el estado cambió
     if (this.estado != this.estadoAnterior) {
       vida = 0; // Si cambió el estado, reinicia el contador de vida
     }
@@ -122,14 +114,11 @@ class Blob {
   // -------------------------
 
   void actualizar() {
-
     if (vida > 0) {
       entro = true;
     }
     vida++;
     vida = vida % 100;
-    
-    println("vida: "+vida);
 
     salio = ultimaActualizacion == limite_tiempo_salir ? true : false;
 

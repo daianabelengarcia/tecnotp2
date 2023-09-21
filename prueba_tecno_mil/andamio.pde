@@ -17,9 +17,9 @@ class Andamio extends FBox {
   void actualizar (float velocidad) {
     float nuevaPosX = getX() - velocidad;  
 
-  if (nuevaPosX < -getWidth()) {
-    nuevaPosX = width;
-  }
-  setPosition(nuevaPosX, getY());
+    if (nuevaPosX < -getWidth()) {
+      nuevaPosX = width;
+    }
+    setPosition(nuevaPosX, getY());
   }
 }
