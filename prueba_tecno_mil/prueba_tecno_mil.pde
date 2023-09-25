@@ -1,11 +1,14 @@
+
 int PUERTO_OSC  = 12345 ;
 Receptor receptor;
 
 import fisica.*;
+import processing.sound.*;
 
 FWorld mundo;
 
 Personaje personaje;
+LogicaDeEstados logica;
 
 FBox puntero;
 float punteroX;
@@ -44,31 +47,32 @@ Plataforma plataforma;
 Plataforma plataforma3;
 float velplataforma = 3;
 
-PImage fondo;
-PImage logo;
-PImage mira;
-PImage tela;
-int posp = 1000;
-int posf = 0;
-int contador = 0;
 
 // -- Blob --
 float ultimaPosicionBlobDesaparecidoX;
 float ultimaPosicionBlobDesaparecidoY;
 
-int estadoActual = 2;
-boolean botonPresionado = false;
 float mx, my;
+
+// -- Sonido --
+SoundFile sonidoInicio;
+SoundFile sonidoAmbiente;
+SoundFile sonidoGanaste;
+SoundFile sonidoLanzaTelarana;
+SoundFile sonidoCaida;
+SoundFile sonidoCaePlataforma;
+SoundFile sonidoEmbocaAndamio;
+SoundFile sonidoPerdiste;
+SoundFile sonidoWiii;
 
 void setup() {
 
   size (1000, 600);
-  fondo = loadImage("fondo2.jpg");
-  logo = loadImage("logoConDino.png");
-  tela = loadImage("telarana.png");
 
   setupOSC(PUERTO_OSC);
   receptor = new Receptor();
+
+  logica = new LogicaDeEstados();
 
   Fisica.init(this);
 
@@ -76,8 +80,7 @@ void setup() {
   mundo.setEdges(0, 0, 1000, 1000);
   mundo.setGravity(0, 800);
 
-  //------------PLATAFORMAS----------
-
+  //------------PLATAFORMAS----------   // NOTA: Podríamos ponerle una imagen a las plataformas
   plataforma = new Plataforma (1200, 40);
   plataforma.inicializar(0, height-20);
   mundo.add(plataforma);
@@ -91,8 +94,7 @@ void setup() {
   personaje.inicializar(150, height-150);
   mundo.add(personaje);
 
-  //-----------ANDAMIOS-----------
-
+  //-----------ANDAMIOS-----------     // NOTA: Le puse imagen a los andamios pero habría que ajustar la zona en donde agarra el puntero. Hice lo que pude.
   andamio = new Andamio(tamax, tamay);
   andamio.inicializar(andamioX, andamioY);
   mundo.add(andamio);
@@ -102,132 +104,62 @@ void setup() {
 
   f = 0.9;
 
-  hayTelarana = false;
+  //-----------SONIDO----------
+  sonidoInicio = new SoundFile(this, "Inicio.wav");
+  sonidoAmbiente = new SoundFile (this, "Ambiente.wav");
+  sonidoGanaste = new SoundFile (this, "Ganaste.wav");
+  sonidoLanzaTelarana = new SoundFile (this, "Telaraña.wav");
+  sonidoCaida = new SoundFile (this, "Caida.wav");
+  sonidoCaePlataforma = new SoundFile (this, "CaePlataforma.wav");
+  sonidoEmbocaAndamio = new SoundFile (this, "EmbocaAndamio.wav");
+  sonidoPerdiste = new SoundFile (this, "Perdiste.wav");
+  sonidoWiii = new SoundFile (this, "Wiii.wav");
+
+  sonidoAmbiente.play();
 }
 
 void draw() {
   receptor.actualizar(mensajes);
-
   mundo.step();
-
-  image(fondo, posf, 0); 
-
-  mundo.draw();
-
-  println("contador: " + contador);
-  println("estadoActual: " + estadoActual);
-  println(personaje.getX());
-
-  personaje.actualizar();
-
 
   boolean hayBlobEnPantalla = false; //-->(NO es que quiera poner este boolean en el draw, es que sino no funciona. No me preguntes por qué. No lo sé)
 
-  if (botonPresionado) {
-    estadoActual = (estadoActual % 4) + 1;
-    botonPresionado = false;
-  }
+  logica.cambiarEstado(hayBlobEnPantalla, ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
+  logica.actualizar();
 
-  if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {
-    mundo.remove(puntero);
-    puntero = null;
-  }
-
-
-  //if (!hayBlobEnPantalla) {  // Si no hay blobs en la pantalla, se crea el puntero
-  //  if (ultimaPosicionBlobDesaparecidoX != 0.0 && ultimaPosicionBlobDesaparecidoY != 0.0) {  // Establece la posición del puntero en la última posición del blob que desapareció
-  //    luzDesaparece();
-  //  }
-  //println("No hay blobs en la pantalla");
-  //}
-
-  // CÓDIGO CREADO POR EL PROFE - NO TOCAR -
-  hayBlobEnPantalla = false; 
 
   for (Blob b : receptor.blobs) {
-    if (!b.salio) {
+    if (b.entro) {
       hayBlobEnPantalla = true;
     }
-    if (b.salio) {
+    if (!b.entro) {
       hayBlobEnPantalla = false;
       ultimaPosicionBlobDesaparecidoX = b.ultimaPosicionBlob.x;
       ultimaPosicionBlobDesaparecidoY = b.ultimaPosicionBlob.y;
     }
   }
-  boolean salioLuz = antesHabiaBlob && !hayBlobEnPantalla;
-  boolean entroLuz = !antesHabiaBlob && hayBlobEnPantalla;
+  boolean salioLuz = !hayBlobEnPantalla;
+  boolean entroLuz = hayBlobEnPantalla;
 
-  if (salioLuz) {
-    luzDesaparece(ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
-  }
   if (entroLuz) {
+    receptor.dibujarBlobs();
     if (telarana != null && puntero != null) {
       telarana.nohayTelarana();
       mundo.remove(puntero);
     }
   }
 
-
-  antesHabiaBlob = hayBlobEnPantalla;
-
-  if (hayBlobEnPantalla) {
-    receptor.dibujarBlobs();
-  }
-  // CÓDIGO CREADO POR EL PROFE - NO TOCAR -
-
-
-
-  // Botones que funcionan con la luz
-  //if (!hayBlobEnPantalla) {
-  //  if (ultimaPosicionBlobDesaparecidoX > width/2-50 && ultimaPosicionBlobDesaparecidoX < width/2+50 && ultimaPosicionBlobDesaparecidoY > (height/2+150)-25 && ultimaPosicionBlobDesaparecidoY < (height/2+150)+25)) {
-  //    botonPresionado = true;
-  //  }
-  //  if ((estadoActual == 3 || estadoActual == 4) && (ultimaPosicionBlobDesaparecidoX > width/2-50 && ultimaPosicionBlobDesaparecidoX < width/2+50 && ultimaPosicionBlobDesaparecidoY > (height/2+50)-25 && ultimaPosicionBlobDesaparecidoY < (height/2+50)+25)) {
-  //    estadoActual = 1;
-  //  }
-  //}
-
-  //if (estadoActual == 1) {  // ---> PANTALLA DE INICIO
-
-  //  fill(0);
-  //  rect(0, 0, width, height);
-  //  push();
-  //  imageMode(CENTER);
-  //  image (logo, width/2+10, height/3);
-  //  colorMode(RGB);
-  //  noFill();
-  //  stroke(252, 232, 0);
-  //  strokeWeight(4);
-  //  rectMode(CENTER);
-  //  rect(width/2, height/2+150, 100, 50);
-
-  //  fill(255);
-  //  textMode(CENTER);
-  //  text("Dispare una telaraña aquí para empezar", width/2-110, height/2+100);
-  //  pop();
-  //  receptor.dibujarBlobs();
-  //} else if (estadoActual == 2) {  // ---> EL JUEGO
-
-  contador++;   // --> (Esto no sirve de mucho. Solo lo tengo para saber cuando funciona y cuando no el estado 2, es decir, el juego)
-
-  posf--;
-  if (posf <= -5000) { //Fondo vuelve a comenzar
-    posf = 0;
+  if (salioLuz) {
+    logica.luzDesaparece(ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
   }
 
-  personaje.actualizar();
+  if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {  // Importante: no borrar porque sino no anda el mouse.
+    mundo.remove(puntero);
+    puntero = null;
+  }
 
-  andamio.actualizar(velocidad);
-  andamio2.actualizar(velocidad);
-
-  plataforma.actualizar(velplataforma);
-  plataforma3.actualizar(velplataforma);
-
-  //if (personaje.getY() >= height+100) {
-  //  estadoActual = 4;
-  //  borrar();
-  //  reiniciar();
-  //}
+  println("hay blob: "+hayBlobEnPantalla);
+  println("estado: "+logica.estadoActual);
 
 
   //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
@@ -236,90 +168,43 @@ void draw() {
   //mundo.draw();
 
   //receptor.dibujarBlobs();
-  //  } else if (estadoActual == 3) {   // ---> PANTALLA DE GANAR
-  //    fill(0);
-  //    rect(0, 0, width, height);
-
-  //    push();
-  //    fill(255);
-  //    textSize(24);
-  //    textMode(CENTER);
-  //    textAlign(CENTER);
-  //    text("GANASTE", width/2, height/2-100);
-
-  //    imageMode(CENTER);
-  //    colorMode(RGB);
-  //    noFill();
-  //    stroke(252, 232, 0);
-  //    strokeWeight(4);
-  //    rectMode(CENTER);
-  //    rect(width/2, height/2+50, 100, 50);
-
-  //    fill(255);
-  //    textSize(14);
-  //    text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
-  //    pop();
-  //    receptor.dibujarBlobs();
-  //  } else if (estadoActual == 4) {   // ---> PANTALLA DE PERDER
-
-  //    fill(0);
-  //    rect(0, 0, width, height);
-
-  //    push();
-  //    fill(255);
-  //    textSize(24);
-  //    textMode(CENTER);
-  //    textAlign(CENTER);
-  //    text("PERDISTE", width/2, height/2-100);
-
-  //    imageMode(CENTER);
-  //    colorMode(RGB);
-  //    noFill();
-  //    stroke(252, 232, 0);
-  //    strokeWeight(4);
-  //    rectMode(CENTER);
-  //    rect(width/2, height/2+50, 100, 50);
-
-  //    fill(255);
-  //    textSize(14);
-  //    text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
-  //    pop();
-  //    receptor.dibujarBlobs();
   //  }
-
-  //  println("frameRate: " + frameRate );
-}
-
-
-void luzDesaparece(float ultimaPosicionBlobDesaparecidoX, float ultimaPosicionBlobDesaparecidoY) {
-
-  if (puntero == null) {
-    puntero = new FBox(20, 20);
-    puntero.attachImage(tela);
-
-    //puntero.setFill(255, 100, 100);  // ---> Formas de personalizar FCircle, FBox o cualquier objeto de Fisica.
-    //puntero.setNoStroke();           //      Lo comenté para tenerlo a mano, por las dudas
-    //puntero.setStrokeWeight(5);
-    //puntero.setStroke(255, 0, 50);
-
-    mundo.add(puntero);
-
-    punteroX = ultimaPosicionBlobDesaparecidoX ; // Ajusta la posición del puntero en relación con la cámara y el personaje
-    punteroY = ultimaPosicionBlobDesaparecidoY;
-
-    puntero.setPosition(punteroX, punteroY);
-    puntero.setStatic(true);
-    puntero.setGrabbable(false);
-  }
-
-  telarana = new Telarana (personaje, puntero);
-  telarana.inicializar(andamio.getX(), andamio.getY(), andamio2.getX(), andamio2.getY());
-  telarana.hayTelarana(punteroX, punteroY);
 }
 
 void mousePressed() {
-  luzDesaparece(mouseX, mouseY);
+  logica.luzDesaparece(mouseX, mouseY);
+
+  // Botones con el mouse
+  if (logica.estadoActual == 1 && (mouseX > width/2-50 && mouseX < width/2+50 && mouseY > (height/2+150)-25 && mouseY < (height/2+150)+25)) {
+    logica.estadoActual = 2;
+
+    // Sonido
+    sonidoInicio.play();
+    sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  }
+  if ((logica.estadoActual == 3 || logica.estadoActual == 4) && (mouseX > width/2-50 && mouseX < width/2+50 && mouseY > (height/2+50)-25 && mouseY < (height/2+50)+25)) {
+    logica.estadoActual = 1;
+
+    // Sonido
+    sonidoInicio.stop();
+    sonidoAmbiente.play();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  }
 }
+
 
 //-----------SI EL DINO NO ESTÁ EN CONTACTO CON LA PLATAFORMA, NO PUEDE SALTAR (SOLO PARA LAS TECLAS)-----------
 void contactStarted(FContact contact) {
@@ -336,40 +221,97 @@ void contactStarted(FContact contact) {
   }
 }
 
-void reiniciar() {
-  contador = 0;
-  //mundo = new FWorld();
-  mundo.setEdges(0, 0, 1000, 1000);
-  mundo.setGravity(0, 800);
+//  -------SONIDOS-------
 
-  //------------PLATAFORMAS----------
-  plataforma = new Plataforma (600, 40);
-  plataforma.inicializar(0, height-20);
-  mundo.add(plataforma);
-
-  plataforma3 = new Plataforma (600, 80);
-  plataforma3.inicializar(800, height-40);
-  mundo.add(plataforma3);
-
-  //-----------PERSONAJE----------
-  personaje = new Personaje (145, 183);
-  personaje.inicializar(150, height-150);
-  mundo.add(personaje);
-
-  //-----------ANDAMIOS-----------
-  andamio = new Andamio(tamax, tamay);
-  andamio.inicializar(andamioX, andamioY);
-  mundo.add(andamio);
-  andamio2 = new Andamio(tamax, tamay);
-  andamio2.inicializar(1200, 100);
-  mundo.add(andamio2);
-
-  hayTelarana = false;
-}
-void borrar() {
-  mundo.remove(plataforma);
-  mundo.remove(plataforma3);
-  mundo.remove(personaje);
-  mundo.remove(andamio);
-  mundo.remove(andamio2);
+void keyPressed() {
+  if (key == 'a') {       //AMBIENTE
+    sonidoInicio.stop();
+    sonidoAmbiente.play();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  } else if (key == 'b') {  //INICIO
+    sonidoInicio.play();
+    sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  } else if (key == 'c') { //GANASTE -- ACORTAR
+    sonidoInicio.stop();
+    sonidoAmbiente.stop();
+    sonidoGanaste.play();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  } else if (key == 'd') {  //CAIDA
+    sonidoInicio.stop();    
+    sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoCaida.play();
+    sonidoLanzaTelarana.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  } else if (key == 'e') {  //LANZATELARAÑA -- ACORTAR
+    sonidoInicio.stop();
+    //sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.play();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoWiii.stop();
+  } else if (key == 'f') {  //CAE PLATAFORMA
+    sonidoInicio.stop();
+    sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.play();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  } else if (key == 'g') {  //EMBOCA ANDAMIO
+    sonidoInicio.stop();
+    sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.play();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  } else if (key == 'h') {  //PERDISTE
+    sonidoInicio.stop();
+    sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.play();
+    sonidoWiii.stop();
+  } else if (key == 'i') {  //WIII -- ACORTAR
+    sonidoInicio.stop();
+    sonidoAmbiente.stop();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.play();
+  }
 }
