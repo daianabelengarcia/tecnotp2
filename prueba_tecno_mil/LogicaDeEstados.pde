@@ -25,7 +25,7 @@ class LogicaDeEstados {
 
     // Botones con luz
     if (!hayBlob) {
-      if (ultimaPosicionBlobDesaparecidoX > width/2-50 && ultimaPosicionBlobDesaparecidoX < width/2+50 && ultimaPosicionBlobDesaparecidoY > (height/2+150)-25 && ultimaPosicionBlobDesaparecidoY < (height/2+150)+25) {
+      if ((estadoActual == 1) && (ultimaPosicionBlobDesaparecidoX > width/2-50 && ultimaPosicionBlobDesaparecidoX < width/2+50 && ultimaPosicionBlobDesaparecidoY > (height/2+150)-25 && ultimaPosicionBlobDesaparecidoY < (height/2+150)+25)) {
         estadoActual = 2;
 
         // Sonido
@@ -181,7 +181,7 @@ class LogicaDeEstados {
     }
   }
 
-  void luzDesaparece(float PosicionBlobDesaparecidoX, float PosicionBlobDesaparecidoY) {
+  void luzDesaparece(float PosicionBlobX, float PosicionBlobY) {
 
     if (puntero == null) {
       puntero = new FBox(20, 20);
@@ -194,8 +194,8 @@ class LogicaDeEstados {
 
       mundo.add(puntero);
 
-      punteroX = PosicionBlobDesaparecidoX ; // Ajusta la posición del puntero en relación con la cámara y el personaje
-      punteroY = PosicionBlobDesaparecidoY;
+      punteroX = PosicionBlobX ; // Ajusta la posición del puntero en relación con la cámara y el personaje
+      punteroY = PosicionBlobY;
 
       puntero.setPosition(punteroX, punteroY);
       puntero.setStatic(true);

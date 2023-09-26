@@ -160,15 +160,13 @@ void draw() {
 
   println("hay blob: "+hayBlobEnPantalla);
   println("estado: "+logica.estadoActual);
+  println("luz: "+salioLuz);
 
 
   //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
   //float xCamara = personaje.getX();
   //translate(-xCamara + 100, 0);
   //mundo.draw();
-
-  //receptor.dibujarBlobs();
-  //  }
 }
 
 void mousePressed() {
