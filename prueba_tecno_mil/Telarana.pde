@@ -13,15 +13,15 @@ class Telarana extends FDistanceJoint {
     super (personaje, puntero);
   }
   void inicializar (float ax, float ay, float ax2, float ay2) {
-    aIzq = ax -150;
-    aDer = ax +150;
-    aArriba = ay;
-    aAbajo = ay +80;
+    aIzq = ax -200;
+    aDer = ax +200;
+    aArriba = ay +217;
+    aAbajo = ay +265;
 
-    aIzq2 = ax2 -150;
-    aDer2 = ax2 +150;
-    aArriba2 = ay2;
-    aAbajo2 = ay2 +80;
+    aIzq2 = ax2 -200;
+    aDer2 = ax2 +200;
+    aArriba2 = ay2 +217;
+    aAbajo2 = ay2 +265;
 
 
     setDamping (1);

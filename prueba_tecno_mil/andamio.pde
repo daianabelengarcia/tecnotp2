@@ -5,7 +5,7 @@ class Andamio extends FBox {
 
   Andamio (int tamx, int tamy) {
     super (tamx, tamy);
-    andamio = loadImage("data/andamios2.png");
+    andamio = loadImage("data/andamios3.png");
   }
   void inicializar (int andamioX, int andamioY) {
     x = andamioX;

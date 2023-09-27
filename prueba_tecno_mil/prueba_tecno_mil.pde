@@ -115,7 +115,15 @@ void setup() {
   sonidoPerdiste = new SoundFile (this, "Perdiste.wav");
   sonidoWiii = new SoundFile (this, "Wiii.wav");
 
+  sonidoInicio.stop();
   sonidoAmbiente.play();
+  sonidoGanaste.stop();
+  sonidoLanzaTelarana.stop();
+  sonidoCaida.stop();
+  sonidoCaePlataforma.stop();
+  sonidoEmbocaAndamio.stop();
+  sonidoPerdiste.stop();
+  sonidoWiii.stop();
 }
 
 void draw() {
@@ -170,6 +178,7 @@ void draw() {
 }
 
 void mousePressed() {
+
   logica.luzDesaparece(mouseX, mouseY);
 
   // Botones con el mouse
