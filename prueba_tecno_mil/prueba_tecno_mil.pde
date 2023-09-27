@@ -141,22 +141,22 @@ void draw() {
   boolean salioLuz = !hayBlobEnPantalla;
   boolean entroLuz = hayBlobEnPantalla;
 
+  if (puntero != null) {
+    mundo.remove(puntero);
+    puntero = null;
+  }
   if (entroLuz) {
     receptor.dibujarBlobs();
-    if (telarana != null && puntero != null) {
-      telarana.nohayTelarana();
-      mundo.remove(puntero);
-    }
   }
 
   if (salioLuz) {
     logica.luzDesaparece(ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
   }
 
-  if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {  // Importante: no borrar porque sino no anda el mouse.
-    mundo.remove(puntero);
-    puntero = null;
-  }
+  //if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {  // Importante: Me está volviendo loca.
+  //  mundo.remove(puntero);                                        // Así comentado funciona perfecto con luz, pero no funciona con el mouse
+  //  puntero = null;                                               // Si lo descomento deja de funcionar con luz, pero funciona con el mouse (mas o menos)
+  //}
 
   println("hay blob: "+hayBlobEnPantalla);
   println("estado: "+logica.estadoActual);
