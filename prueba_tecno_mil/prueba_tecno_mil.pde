@@ -94,7 +94,7 @@ void setup() {
   personaje.inicializar(150, height-150);
   mundo.add(personaje);
 
-  //-----------ANDAMIOS-----------     // NOTA: Le puse imagen a los andamios pero habría que ajustar la zona en donde agarra el puntero. Hice lo que pude.
+  //-----------ANDAMIOS-----------     
   andamio = new Andamio(tamax, tamay);
   andamio.inicializar(andamioX, andamioY);
   mundo.add(andamio);
