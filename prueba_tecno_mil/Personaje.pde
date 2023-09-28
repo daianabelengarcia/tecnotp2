@@ -1,6 +1,5 @@
 class Personaje extends FBox {
   boolean puedeSaltar;
-  boolean arribaPresionado, izqPresionado, derPresionado;
   PImage [] rexCamina = new PImage[7];
   int indexImagenes;
   PImage[] saltar = new PImage[3];
@@ -21,9 +20,6 @@ class Personaje extends FBox {
 
   void inicializar(int x, int y) {
     puedeSaltar = false;
-    izqPresionado = false;
-    derPresionado = false;
-    arribaPresionado = false;
     detenerAnimacion = false;
 
 
@@ -44,17 +40,6 @@ class Personaje extends FBox {
     indexImagenes = (indexImagenes+1) % rexCamina.length;
     if (frameCount%30 == 0 ) {
       attachImage(rexCamina[indexImagenes]);
-      //setVelocity(150, getVelocityY());
-    }
-    if (izqPresionado) {
-      setVelocity(-90, getVelocityY());
-    }
-    if (derPresionado) {
-      setVelocity(90, getVelocityY());
-    }
-    if (arribaPresionado && puedeSaltar) {
-      setVelocity(getVelocityX(), -200);
-      puedeSaltar = false;
     }
 
     if (!puedeSaltar) {

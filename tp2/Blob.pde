@@ -7,7 +7,7 @@ class Blob {
   int vida;
   int ultimaActualizacion;
   int limite_tiempo_salir;
-  int estado;
+  int estadoBlob;
   int estadoAnterior;
   String nombre;
   PImage mira;
@@ -37,10 +37,9 @@ class Blob {
 
   ArrayList <Float> contorno;
 
-  Blob (int estado ) {
+  Blob(int estadoBlob) {
 
-
-    entro =  false;    // No me terminan de cerrar los boolean "entro" y "salio". No funcionan bien.
+    entro =  true;    // No me terminan de cerrar los boolean "entro" y "salio". No funcionan bien.
     actualizado = false;
     salio = false;
 
@@ -49,13 +48,13 @@ class Blob {
 
     limite_tiempo_salir = -1;   // Esto no entiendo que hace. Solo sé que tiene que estar en negativo.
 
-    this.estado = estado;
-    this.estadoAnterior = estado;
+    this.estadoBlob = estadoBlob;
+    this.estadoAnterior = estadoBlob;
 
     blobDesaparecido = false;
     ultimaPosicionBlob = new PVector(0, 0); 
 
-    mira = loadImage("mira3.png");
+    mira = loadImage("data/mira2.png");
 
     id = -1;
     age = 0 ;
@@ -78,35 +77,19 @@ class Blob {
     contorno = new ArrayList<Float>();
   }
 
-  // -------------------------
-  void asignacion() {
-    if (this.estado == 1) {
-      this.nombre = "entrar";
-    } else if (this.estado == 2) {
-      this.nombre = "salir";
-    }
-  }
-  void cambiar() {
-    //if (this.nombre.equals("entrar")) {
-      //fill (0);
-      //ellipse (centroidX*width, centroidY*height, 50, 50);
+  void dibujarMira() {
+    if (entro == true) {
       image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
-      //PGraphics miraPG = createGraphics(mira.width, mira.height);
-      //miraPG.beginDraw();
-      //miraPG.image(mira, 0, 0);
-      //miraPG.endDraw();
-      //image(miraPG, centroidX*width -25, centroidY*height-25, 50, 50);
-
-      salio = false;
-      entro = true;
       vida++;
-    //} 
+    } else if (entro == false) {
+      vida = 0;
+    }
 
     // Verificar si el estado cambió
-    if (this.estado != this.estadoAnterior) {
+    if (this.estadoBlob != this.estadoAnterior) {
       vida = 0; // Si cambió el estado, reinicia el contador de vida
     }
-    estadoAnterior = estado; // Actualiza el estado anterior con el estado actual
+    estadoAnterior = estadoBlob; // Actualiza el estado anterior con el estado actual
   }
 
   // -------------------------
@@ -114,6 +97,8 @@ class Blob {
   void actualizar() {
     if (vida > 0) {
       entro = true;
+    } else {
+      entro = false;
     }
     vida++;
     vida = vida % 100;
@@ -160,7 +145,6 @@ class Blob {
   // -------------------------
 
   void dibujar() {
-    asignacion();
-    cambiar();
+    dibujarMira();
   }
 }

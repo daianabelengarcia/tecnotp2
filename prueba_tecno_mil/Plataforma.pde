@@ -5,6 +5,8 @@ class Plataforma extends FBox {
 
   Plataforma (int tamx, int tamy) {
     super(tamx, tamy);
+    setFill(100, 100, 100);  
+    setNoStroke(); 
   }
   void inicializar (int posx, int posy) {
     setName("plataforma");

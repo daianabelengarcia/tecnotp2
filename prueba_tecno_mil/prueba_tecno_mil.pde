@@ -18,15 +18,15 @@ float origenY;
 float f;
 int ruido = 30;
 
-
 Telarana telarana;
 boolean hayTelarana;
 
 Andamio andamio;
 Andamio andamio2;
 float velocidad = 5;
-int andamioY = 100;
+int andamioY = 0;
 int andamioX = 500;
+int andamioX2 = 1200;
 int tamax = 400;
 int tamay = 40;
 
@@ -42,11 +42,9 @@ float aDer2;
 float aArriba2;
 float aAbajo2; //hasta acá
 
-
 Plataforma plataforma;
 Plataforma plataforma3;
 float velplataforma = 3;
-
 
 // -- Blob --
 float ultimaPosicionBlobDesaparecidoX;
@@ -81,12 +79,12 @@ void setup() {
   mundo.setGravity(0, 800);
 
   //------------PLATAFORMAS----------   // NOTA: Podríamos ponerle una imagen a las plataformas
-  plataforma = new Plataforma (1200, 40);
-  plataforma.inicializar(0, height-20);
+  plataforma = new Plataforma (600, 40);
+  plataforma.inicializar(200, height-20);
   mundo.add(plataforma);
 
-  plataforma3 = new Plataforma (1200, 80);
-  plataforma3.inicializar(800, height-40);
+  plataforma3 = new Plataforma (600, 80);
+  plataforma3.inicializar(1000, height-40);
   mundo.add(plataforma3);
 
   //-----------PERSONAJE----------
@@ -99,7 +97,7 @@ void setup() {
   andamio.inicializar(andamioX, andamioY);
   mundo.add(andamio);
   andamio2 = new Andamio(tamax, tamay);
-  andamio2.inicializar(1200, 100);
+  andamio2.inicializar(andamioX2, andamioY);
   mundo.add(andamio2);
 
   f = 0.9;
@@ -149,10 +147,11 @@ void draw() {
   boolean salioLuz = !hayBlobEnPantalla;
   boolean entroLuz = hayBlobEnPantalla;
 
-  if (puntero != null) {
-    mundo.remove(puntero);
+  if (puntero != null) {        // comentar para mouse
+    mundo.remove(puntero);      // descomentar para luz
     puntero = null;
   }
+  
   if (entroLuz) {
     receptor.dibujarBlobs();
   }
@@ -161,14 +160,15 @@ void draw() {
     logica.luzDesaparece(ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
   }
 
-  //if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {  // Importante: Me está volviendo loca.
-  //  mundo.remove(puntero);                                        // Así comentado funciona perfecto con luz, pero no funciona con el mouse
-  //  puntero = null;                                               // Si lo descomento deja de funcionar con luz, pero funciona con el mouse (mas o menos)
+  //if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {    // comentar para luz
+  //  mundo.remove(puntero);                                          // descomentar para mouse
+  //  puntero = null;                                            
   //}
 
   println("hay blob: "+hayBlobEnPantalla);
   println("estado: "+logica.estadoActual);
-  println("luz: "+salioLuz);
+  println("luz: "+salioLuz);  
+  println("telaraña: "+telarana.telaranaLanzada);
 
 
   //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
@@ -182,7 +182,7 @@ void mousePressed() {
   logica.luzDesaparece(mouseX, mouseY);
 
   // Botones con el mouse
-  if (logica.estadoActual == 1 && (mouseX > width/2-50 && mouseX < width/2+50 && mouseY > (height/2+150)-25 && mouseY < (height/2+150)+25)) {
+  if (logica.estadoActual == 1 && (mouseX > (width/2+302)-162 && mouseX < (width/2+302)+162 && mouseY > (height/2+48)-45 && mouseY < (height/2+48)+45)) {
     logica.estadoActual = 2;
 
     // Sonido
@@ -213,7 +213,7 @@ void mousePressed() {
 }
 
 
-//-----------SI EL DINO NO ESTÁ EN CONTACTO CON LA PLATAFORMA, NO PUEDE SALTAR (SOLO PARA LAS TECLAS)-----------
+//-----------SI EL DINO NO ESTÁ EN CONTACTO CON LA PLATAFORMA, NO PUEDE SALTAR-----------
 void contactStarted(FContact contact) {
   FBody body1 = contact.getBody1();
   FBody body2 = contact.getBody2();
@@ -221,8 +221,10 @@ void contactStarted(FContact contact) {
     if (contact.getNormalX() == 0 && personaje.getVelocityY() >= 0) {
       if (body1.getName() == "personaje" && contact.getNormalY() > 0) {
         personaje.puedeSaltar = true;
+        sonidoCaePlataforma.play();
       } else if (body2.getName() == "personaje" && contact.getNormalY() < 0) {
         personaje.puedeSaltar = true;
+        sonidoCaePlataforma.play();
       }
     }
   }
