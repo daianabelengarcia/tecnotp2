@@ -8,9 +8,10 @@ class Telarana extends FDistanceJoint {
   float aDer2;
   float aArriba2;
   float aAbajo2; //hasta acá
-  
-  boolean telaranaLanzada = false;
 
+  boolean telaranaLanzada = false;
+  boolean sonidoReproducido = false; 
+  boolean sonidofunca = false;
 
   Telarana (FBox personaje, FBox puntero) {
     super (personaje, puntero);
@@ -26,7 +27,6 @@ class Telarana extends FDistanceJoint {
     aArriba2 = ay2+80;
     aAbajo2 = ay2+130;
 
-
     setDamping (1);
     setFrequency(2);
     setLength (200);
@@ -35,11 +35,20 @@ class Telarana extends FDistanceJoint {
   void hayTelarana (float punteroX, float punteroY) {
     if (!telaranaLanzada && ((punteroX >= aIzq && punteroX <= aDer && punteroY >= aArriba && punteroY <= aAbajo) || (punteroX >= aIzq2 && punteroX <= aDer2 && punteroY >= aArriba2 && punteroY <= aAbajo2))) {
       mundo.add(telarana);
-      //sonidoLanzaTelarana.play();
       telaranaLanzada = true;
+
+      stroke (255);
+      strokeWeight(3);
+      line (punteroX, punteroY, personaje.getX(), personaje.getY());
+
+      if (!sonidoLanzaTelarana.isPlaying()) {
+        sonidoLanzaTelarana.play(1.8);
+      }
+
+      //telaranaLanzada = true;
     } else {
       sonidoLanzaTelarana.stop();
+      telaranaLanzada = false;
     }
   }
-  
 }

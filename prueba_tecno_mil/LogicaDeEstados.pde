@@ -13,6 +13,8 @@ class LogicaDeEstados {
   int posf = 0;
   int contador = 0;
 
+  boolean ca = false;
+
   LogicaDeEstados() {
     estadoActual = 1; 
 
@@ -147,6 +149,8 @@ class LogicaDeEstados {
         sonidoWiii.stop();
       }
     } else if (estadoActual == 3) {   // Código para el estado de ganar.
+      sonidoLanzaTelarana.stop();
+
       fill(0);
       rect(0, 0, width, height);
 
@@ -170,6 +174,7 @@ class LogicaDeEstados {
       text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
       pop();
     } else if (estadoActual == 4) {   // Código para el estado de perder.
+      sonidoLanzaTelarana.stop();
       fill(0);
       rect(0, 0, width, height);
 
@@ -199,6 +204,7 @@ class LogicaDeEstados {
     if (puntero == null) {
       puntero = new FBox(20, 20);
       puntero.attachImage(tela);
+      
 
       //puntero.setFill(255, 100, 100);  // ---> Formas de personalizar FCircle, FBox o cualquier objeto de Fisica.
       //puntero.setNoStroke();           //      Lo comenté para tenerlo a mano, por las dudas
@@ -214,6 +220,7 @@ class LogicaDeEstados {
       puntero.setStatic(true);
       puntero.setGrabbable(false);
     }
+
 
     telarana = new Telarana (personaje, puntero);
     telarana.inicializar(andamio.getX(), andamio.getY(), andamio2.getX(), andamio2.getY());
