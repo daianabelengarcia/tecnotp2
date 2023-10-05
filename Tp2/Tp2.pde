@@ -93,8 +93,8 @@ void setup() {
   plataforma3.inicializar(1000, height-40);
   mundo.add(plataforma3);
 
-  plataformaFinal = new Plataforma (600, 40);
-  plataformaFinal.inicializar(1500, height-20);
+  plataformaFinal = new Plataforma (200, 40);
+  plataformaFinal.inicializar(1700, height-20);
   mundo.add(plataformaFinal);
 
   //-----------PERSONAJE----------
