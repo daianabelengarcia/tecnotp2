@@ -13,6 +13,9 @@ class Telarana extends FDistanceJoint {
   boolean sonidoReproducido = false; 
   boolean sonidofunca = false;
 
+  float vel = 0.1;
+
+
   Telarana (FBox personaje, FBox puntero) {
     super (personaje, puntero);
   }
@@ -39,7 +42,17 @@ class Telarana extends FDistanceJoint {
 
       stroke (255);
       strokeWeight(3);
-      line (punteroX, punteroY, personaje.getX(), personaje.getY());
+      //line (personaje.getX(), personaje.getY(), punteroX, punteroY);
+      t = t+vel;
+      float x= lerp(personaje.getX(), punteroX, t);
+      float y= lerp(personaje.getY(), punteroY, t);
+
+      //strokeWeight(20);
+      line(personaje.getX(), personaje.getY(), x, y);
+      if (t >= 1) {
+        t = 0.9;
+      }
+      println(t);
 
       if (!sonidoLanzaTelarana.isPlaying()) {
         sonidoLanzaTelarana.play(1.8);
@@ -49,6 +62,7 @@ class Telarana extends FDistanceJoint {
     } else {
       sonidoLanzaTelarana.stop();
       telaranaLanzada = false;
+      t = 0;
     }
   }
 }

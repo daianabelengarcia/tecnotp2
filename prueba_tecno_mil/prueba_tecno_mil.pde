@@ -52,6 +52,9 @@ float ultimaPosicionBlobDesaparecidoY;
 
 float mx, my;
 
+float t = 0 ;
+
+
 // -- Sonido --
 SoundFile sonidoInicio;
 SoundFile sonidoAmbiente;
@@ -133,7 +136,7 @@ void draw() {
   logica.cambiarEstado(hayBlobEnPantalla, ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
   logica.actualizar();
 
-
+  
   for (Blob b : receptor.blobs) {
     if (b.entro) {
       hayBlobEnPantalla = true;
@@ -165,10 +168,11 @@ void draw() {
     puntero = null;                                            
   }
 
-  println("hay blob: "+hayBlobEnPantalla);
-  println("estado: "+logica.estadoActual);
-  println("luz: "+salioLuz);  
-  println("telaraña: "+telarana.telaranaLanzada);
+  //println(t);
+  //println("hay blob: "+hayBlobEnPantalla);
+  //println("estado: "+logica.estadoActual);
+  //println("luz: "+salioLuz);  
+  //println("telaraña: "+telarana.telaranaLanzada);
 
 
   //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------

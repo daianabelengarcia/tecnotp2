@@ -19,8 +19,8 @@ class LogicaDeEstados {
     fondo = loadImage("data/fondo2.jpg");
     fondoInicio = loadImage("data/fondoRex2.jpg");
     logo = loadImage("data/logoConDino.png");
-    logoPerdiste = loadImage("data/perdiste.png");
-    logoGanaste = loadImage("data/ganaste.png");
+    logoPerdiste = loadImage("data/PantallaPerdiste.jpg");
+    logoGanaste = loadImage("data/pantallaGanaste.jpg");
     tela = loadImage("data/telarana.png");
     maryRex = loadImage("data/mary-rex.png");
 
@@ -45,7 +45,7 @@ class LogicaDeEstados {
         sonidoPerdiste.stop();
         sonidoWiii.stop();
       }
-      if ((estadoActual == 3 || estadoActual == 4) && (ultimaPosicionBlobDesaparecidoX > width/2-50 && ultimaPosicionBlobDesaparecidoX < width/2+50 && ultimaPosicionBlobDesaparecidoY > (height/2+50)-25 && ultimaPosicionBlobDesaparecidoY < (height/2+50)+25)) {
+      if ((estadoActual == 3 || estadoActual == 4) && (ultimaPosicionBlobDesaparecidoX > (width/2+320)-50 && ultimaPosicionBlobDesaparecidoX < (width/2+320)+50 && ultimaPosicionBlobDesaparecidoY > (90)-25 && ultimaPosicionBlobDesaparecidoY < (90)+25)) {
         estadoActual = 1;
 
         // Sonido
@@ -124,11 +124,11 @@ class LogicaDeEstados {
       plataforma3.actualizar(velplataforma);
 
       if (contador >= 10 * 60) {     // A los 10 segundos aparece la imagen de la bandera de llegada
-      plataformaFinal.actualizar(velplataforma);
+        plataformaFinal.actualizar(velplataforma);
         image (maryRex, plataformaFinal.getX(), plataformaFinal.getY()-200); // Recordatorio: Buscar una mejor manera de poner la bandera y que esté en contacto con la plataforma y el personaje
         noStroke();
-       // fill(100, 100, 100);
-       // rect(780, height-80, 80, 80);
+        // fill(100, 100, 100);
+        // rect(780, height-80, 80, 80);
       }
       if (contador >= 12*60 && personaje.getX() >= plataformaFinal.getX()-80 && personaje.getY() >= plataformaFinal.getY()-200) {// A los 12 segundos cambia a la pantalla de ganar y se reinicia el juego
         personaje.setStatic(true);
@@ -139,7 +139,7 @@ class LogicaDeEstados {
         // Sonido
         sonidoInicio.stop();
         sonidoAmbiente.stop();
-        sonidoGanaste.play();
+        sonidoGanaste.play(0);
         sonidoLanzaTelarana.stop();
         sonidoCaida.stop();
         sonidoCaePlataforma.stop();
@@ -148,11 +148,11 @@ class LogicaDeEstados {
         sonidoWiii.stop();
       }
     } else if (estadoActual == 3) {   // Código para el estado de ganar.
+      sonidoLanzaTelarana.stop();
       fill(0);
-      rect(0, 0, width, height);
+      image(logoGanaste, 0, 0, width, height);
 
       push();
-      image (logoGanaste, 200, 50);
       fill(255);
       textSize(24);
       textAlign(CENTER);
@@ -164,18 +164,18 @@ class LogicaDeEstados {
       stroke(252, 232, 0);
       strokeWeight(4);
       rectMode(CENTER);
-      rect(width/2, height/2+50, 100, 50);
+      rect(width/2+320, 90, 100, 50);
 
       fill(255);
       textSize(14);
-      text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
+      text("Dispare una telaraña aquí para reiniciar", width/2+320, 50);
       pop();
     } else if (estadoActual == 4) {   // Código para el estado de perder.
+      sonidoLanzaTelarana.stop();
       fill(0);
-      rect(0, 0, width, height);
+      image(logoPerdiste, 0, 0, width, height);
 
       push();
-      image (logoPerdiste, 200, 50);
       fill(255);
       textSize(24);
       textAlign(CENTER);
@@ -186,11 +186,11 @@ class LogicaDeEstados {
       stroke(252, 232, 0);
       strokeWeight(4);
       rectMode(CENTER);
-      rect(width/2, height/2+50, 100, 50);
+      rect(width/2+320, 90, 100, 50);
 
       fill(255);
       textSize(14);
-      text("Dispare una telaraña aquí para reiniciar", width/2, height/2);
+      text("Dispare una telaraña aquí para reiniciar", width/2+320, 50);
       pop();
     }
   }
@@ -235,9 +235,9 @@ class LogicaDeEstados {
     plataforma3 = new Plataforma (600, 80);
     plataforma3.inicializar(1000, height-40);
     mundo.add(plataforma3);
-    
-    plataformaFinal = new Plataforma (600,80);
-    plataformaFinal.inicializar(1500,height-20);
+
+    plataformaFinal = new Plataforma (600, 80);
+    plataformaFinal.inicializar(1500, height-20);
     mundo.add(plataformaFinal);
 
     //-----------PERSONAJE----------
