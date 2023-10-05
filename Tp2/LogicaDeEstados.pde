@@ -8,7 +8,7 @@ class LogicaDeEstados {
   PImage logoGanaste;
   //PImage mira;
   PImage tela;
-  PImage bandera;
+  PImage maryRex;
   int posp = 1000;
   int posf = 0;
   int contador = 0;
@@ -22,7 +22,7 @@ class LogicaDeEstados {
     logoPerdiste = loadImage("data/perdiste.png");
     logoGanaste = loadImage("data/ganaste.png");
     tela = loadImage("data/telarana.png");
-    bandera = loadImage("data/bandera.png");
+    maryRex = loadImage("data/mary-rex.png");
 
     hayTelarana = false;
   }
@@ -123,13 +123,14 @@ class LogicaDeEstados {
       plataforma.actualizar(velplataforma);
       plataforma3.actualizar(velplataforma);
 
-      if (contador >= 10 * 60) {               // A los 10 segundos aparece la imagen de la bandera de llegada
-        image (bandera, 800, height/2 + 80); // Recordatorio: Buscar una mejor manera de poner la bandera y que esté en contacto con la plataforma y el personaje
+      if (contador >= 10 * 60) {     // A los 10 segundos aparece la imagen de la bandera de llegada
+      plataformaFinal.actualizar(velplataforma);
+        image (maryRex, plataformaFinal.getX(), plataformaFinal.getY()-200); // Recordatorio: Buscar una mejor manera de poner la bandera y que esté en contacto con la plataforma y el personaje
         noStroke();
-        fill(100, 100, 100);
-        rect(780, height-80, 80, 80);
+       // fill(100, 100, 100);
+       // rect(780, height-80, 80, 80);
       }
-      if (contador >= 12*60 && personaje.getX() >= 800 && personaje.getY() >= height/2+40) {// A los 12 segundos cambia a la pantalla de ganar y se reinicia el juego
+      if (contador >= 12*60 && personaje.getX() >= plataformaFinal.getX()-80 && personaje.getY() >= plataformaFinal.getY()-200) {// A los 12 segundos cambia a la pantalla de ganar y se reinicia el juego
         personaje.setStatic(true);
         estadoActual = 3;
         borrar();
@@ -234,6 +235,10 @@ class LogicaDeEstados {
     plataforma3 = new Plataforma (600, 80);
     plataforma3.inicializar(1000, height-40);
     mundo.add(plataforma3);
+    
+    plataformaFinal = new Plataforma (600,80);
+    plataformaFinal.inicializar(1500,height-20);
+    mundo.add(plataformaFinal);
 
     //-----------PERSONAJE----------
     personaje = new Personaje (145, 183);
@@ -254,6 +259,7 @@ class LogicaDeEstados {
   void borrar() {
     mundo.remove(plataforma);
     mundo.remove(plataforma3);
+    mundo.remove(plataformaFinal);
     mundo.remove(personaje);
     mundo.remove(andamio);
     mundo.remove(andamio2);

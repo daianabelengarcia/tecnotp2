@@ -47,6 +47,7 @@ float aAbajo2; //hasta acá
 
 Plataforma plataforma;
 Plataforma plataforma3;
+Plataforma plataformaFinal;
 float velplataforma = 3;
 
 // -- Blob --
@@ -89,6 +90,10 @@ void setup() {
   plataforma3 = new Plataforma (600, 80);
   plataforma3.inicializar(1000, height-40);
   mundo.add(plataforma3);
+  
+  plataformaFinal = new Plataforma (600,40);
+  plataformaFinal.inicializar(1500, height-20);
+        mundo.add(plataformaFinal);
 
   //-----------PERSONAJE----------
   personaje = new Personaje (145, 183);
@@ -232,6 +237,7 @@ void contactStarted(FContact contact) {
     }
   }
 }
+
 
 //  -------SONIDOS-------
 

@@ -10,6 +10,7 @@ class Telarana extends FDistanceJoint {
   float aAbajo2; //hasta acá
   
   boolean telaranaLanzada = false;
+  boolean puedelanzar = false;
 
 
   Telarana (FBox personaje, FBox puntero) {
@@ -25,7 +26,6 @@ class Telarana extends FDistanceJoint {
     aDer2 = ax2 +200;
     aArriba2 = ay2+80;
     aAbajo2 = ay2+130;
-
 
     setDamping (1);
     setFrequency(2);
