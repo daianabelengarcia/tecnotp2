@@ -11,6 +11,10 @@ class Blob {
   int estadoAnterior;
   String nombre;
   PImage mira;
+  float a = 0.9;
+  
+  float x;
+  float y;
 
   boolean blobDesaparecido;
   PVector ultimaPosicionBlob;
@@ -79,7 +83,11 @@ class Blob {
 
   void dibujarMira() {
     if (entro == true) {
-      image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
+      //image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
+      x= lerp(centerX,centroidX*width-25, a);
+      y= lerp(centerY, centroidY*height-25,  a);
+      image (mira, x, y, 50, 50);
+      
       vida++;
     } else if (entro == false) {
       vida = 0;
@@ -105,8 +113,8 @@ class Blob {
 
     salio = ultimaActualizacion == limite_tiempo_salir ? true : false;
 
-    ultimaPosicionBlob.x = centroidX * width;
-    ultimaPosicionBlob.y = centroidY * height;
+    ultimaPosicionBlob.x = centroidX*width-25;
+    ultimaPosicionBlob.y = centroidY*height-25;
   }
   // -------------------------
 

@@ -157,10 +157,10 @@ void draw() {
   boolean salioLuz = !hayBlobEnPantalla;
   boolean entroLuz = hayBlobEnPantalla;
 
-  //if (puntero != null) {        // comentar para mouse
-  //  mundo.remove(puntero);      // descomentar para luz
-  //  puntero = null;
-  //}
+  if (puntero != null) {        // comentar para mouse
+    mundo.remove(puntero);      // descomentar para luz
+    puntero = null;
+  }
 
   if (entroLuz) {
     receptor.dibujarBlobs();
@@ -170,10 +170,10 @@ void draw() {
     logica.luzDesaparece(ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
   }
 
-  if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {    // comentar para luz
-    mundo.remove(puntero);                                          // descomentar para mouse
-    puntero = null;
-  }
+  //if ((!mousePressed || hayBlobEnPantalla) && puntero != null) {    // comentar para luz
+  //  mundo.remove(puntero);                                          // descomentar para mouse
+  //  puntero = null;
+  //}
 
   println(t);
   println("hay blob: "+hayBlobEnPantalla);
