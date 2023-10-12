@@ -6,6 +6,7 @@ class LogicaDeEstados {
   PImage logo;
   PImage logoPerdiste;
   PImage logoGanaste;
+  PImage andamioFondo, andamioFondo2;
   //PImage mira;
   PImage tela;
   PImage maryRex;
@@ -16,11 +17,13 @@ class LogicaDeEstados {
   LogicaDeEstados() {
     estadoActual = 1; 
 
-    fondo = loadImage("data/fondo2.jpg");
-    fondoInicio = loadImage("data/fondoRex2.jpg");
+    fondo = loadImage("data/fondo4.png");
+    fondoInicio = loadImage("data/fondoRex3.png");
     logo = loadImage("data/logoConDino.png");
-    logoPerdiste = loadImage("data/PantallaPerdiste.jpg");
-    logoGanaste = loadImage("data/pantallaGanaste.jpg");
+    logoPerdiste = loadImage("data/pantallaPerdiste2.png");
+    logoGanaste = loadImage("data/pantallaGanaste3.png");
+    andamioFondo = loadImage("data/andamioFondo.png");
+    andamioFondo2 = loadImage("data/andamioFondo3.png");
     tela = loadImage("data/telarana.png");
     maryRex = loadImage("data/mary-rex.png");
 
@@ -45,7 +48,22 @@ class LogicaDeEstados {
         sonidoPerdiste.stop();
         sonidoWiii.stop();
       }
-      if ((estadoActual == 3 || estadoActual == 4) && (ultimaPosicionBlobDesaparecidoX > (width/2+320)-50 && ultimaPosicionBlobDesaparecidoX < (width/2+320)+50 && ultimaPosicionBlobDesaparecidoY > (90)-25 && ultimaPosicionBlobDesaparecidoY < (90)+25)) {
+      if (estadoActual == 3 && (ultimaPosicionBlobDesaparecidoX > (width/2+347)-124 && ultimaPosicionBlobDesaparecidoX < (width/2+347)+124 && ultimaPosicionBlobDesaparecidoY > (170)-35 && ultimaPosicionBlobDesaparecidoY < (170)+35)) {
+        estadoActual = 1;
+
+
+        // Sonido
+        sonidoInicio.stop();
+        sonidoAmbiente.play();
+        sonidoGanaste.stop();
+        sonidoLanzaTelarana.stop();
+        sonidoCaida.stop();
+        sonidoCaePlataforma.stop();
+        sonidoEmbocaAndamio.stop();
+        sonidoPerdiste.stop();
+        sonidoWiii.stop();
+      }
+      if (estadoActual == 4 && (ultimaPosicionBlobDesaparecidoX > (width/2+360)-124 && ultimaPosicionBlobDesaparecidoX < (width/2+360)+124 && ultimaPosicionBlobDesaparecidoY > (240)-35 && ultimaPosicionBlobDesaparecidoY < (240)+35)) {
         estadoActual = 1;
 
         // Sonido
@@ -125,7 +143,7 @@ class LogicaDeEstados {
 
       if (contador >= 10 * 60) {     // A los 10 segundos aparece la imagen de la bandera de llegada
         plataformaFinal.actualizar(velplataforma);
-        image (maryRex, plataformaFinal.getX(), plataformaFinal.getY()-200); // Recordatorio: Buscar una mejor manera de poner la bandera y que esté en contacto con la plataforma y el personaje
+        image (maryRex, plataformaFinal.getX(), plataformaFinal.getY()-200); 
         noStroke();
         // fill(100, 100, 100);
         // rect(780, height-80, 80, 80);
@@ -151,47 +169,12 @@ class LogicaDeEstados {
       sonidoLanzaTelarana.stop();
       fill(0);
       image(logoGanaste, 0, 0, width, height);
-
-      push();
-      fill(255);
-      textSize(24);
-      textAlign(CENTER);
-      //text("GANASTE", width/2, height/2-100);
-
-
-      colorMode(RGB);
-      noFill();
-      stroke(252, 232, 0);
-      strokeWeight(4);
-      rectMode(CENTER);
-      rect(width/2+320, 90, 100, 50);
-
-      fill(255);
-      textSize(14);
-      text("Dispare una telaraña aquí para reiniciar", width/2+320, 50);
-      pop();
+      image(andamioFondo, 0, 0, width, height);
     } else if (estadoActual == 4) {   // Código para el estado de perder.
       sonidoLanzaTelarana.stop();
       fill(0);
       image(logoPerdiste, 0, 0, width, height);
-
-      push();
-      fill(255);
-      textSize(24);
-      textAlign(CENTER);
-      //text("PERDISTE", width/2, height/2-100);
-
-      colorMode(RGB);
-      noFill();
-      stroke(252, 232, 0);
-      strokeWeight(4);
-      rectMode(CENTER);
-      rect(width/2+320, 90, 100, 50);
-
-      fill(255);
-      textSize(14);
-      text("Dispare una telaraña aquí para reiniciar", width/2+320, 50);
-      pop();
+      image(andamioFondo2, 0, 0, width, height);
     }
   }
 
@@ -223,9 +206,6 @@ class LogicaDeEstados {
 
   void reiniciar() {
     contador = 0;
-    //mundo = new FWorld();
-    //mundo.setEdges(0, 0, 1000, 1000);
-    //mundo.setGravity(0, 800);
 
     //------------PLATAFORMAS----------
     plataforma = new Plataforma (600, 40);
@@ -247,10 +227,10 @@ class LogicaDeEstados {
 
     //-----------ANDAMIOS-----------
     andamio = new Andamio(tamax, tamay);
-    andamio.inicializar(andamioX, andamioY);
+    andamio.inicializar(andamioX2, andamioY);
     mundo.add(andamio);
     andamio2 = new Andamio(tamax, tamay);
-    andamio2.inicializar(andamioX2, andamioY);
+    andamio2.inicializar(andamioX, andamioY);
     mundo.add(andamio2);
 
     hayTelarana = false;

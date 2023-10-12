@@ -1,5 +1,5 @@
 class Telarana extends FDistanceJoint {
-  float aIzq; //bordes andamios
+  float aIzq; 
   float aDer;
   float aArriba;
   float aAbajo;
@@ -7,7 +7,7 @@ class Telarana extends FDistanceJoint {
   float aIzq2;
   float aDer2;
   float aArriba2;
-  float aAbajo2; //hasta acá
+  float aAbajo2; 
 
   boolean telaranaLanzada = false;
   boolean sonidoReproducido = false; 

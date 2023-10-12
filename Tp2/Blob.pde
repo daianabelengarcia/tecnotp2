@@ -43,14 +43,14 @@ class Blob {
 
   Blob(int estadoBlob) {
 
-    entro =  true;    // No me terminan de cerrar los boolean "entro" y "salio". No funcionan bien.
+    entro =  true;    
     actualizado = false;
     salio = false;
 
     vida = 0;
     ultimaActualizacion = 0;
 
-    limite_tiempo_salir = -1;   // Esto no entiendo que hace. Solo sé que tiene que estar en negativo.
+    limite_tiempo_salir = -1;   
 
     this.estadoBlob = estadoBlob;
     this.estadoAnterior = estadoBlob;
@@ -83,10 +83,10 @@ class Blob {
 
   void dibujarMira() {
     if (entro == true) {
-      //image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
-      x= lerp(centerX,centroidX*width-25, a);
-      y= lerp(centerY, centroidY*height-25,  a);
-      image (mira, x, y, 50, 50);
+      image (mira, centroidX*width-25, centroidY*height-25, 50, 50);
+      //x= lerp(centerX,centroidX*width-25, a);
+      //y= lerp(centerY, centroidY*height-25,  a);
+      //image (mira, x, y, 50, 50);
       
       vida++;
     } else if (entro == false) {

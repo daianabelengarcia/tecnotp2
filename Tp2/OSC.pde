@@ -1,6 +1,3 @@
-
-// Esto NO se toca. Seguir de largo.
-
 import oscP5.*;
 OscP5 osc;
 

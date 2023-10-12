@@ -1,5 +1,13 @@
-//-----------VIDEO-----------
-// https://drive.google.com/file/d/1awMukyuEg5PoHGNSq5IyUwdEcLtNHuzQ/view?usp=drive_link
+// INTEGRANTES: Guadalupe Holsman, Candela Ibañes, Daiana García, Camila Fariña.
+
+//-----------VIDEOS-----------
+// https://drive.google.com/file/d/1i2G4ngPni6Jyg8TZSPM0mML7UIrzF8L1/view
+// https://drive.google.com/file/d/1i7Uw6q0HRMFPXHZ-Hmk_MBhz17eCQbu_/view
+
+//----------SOFTWARE----------
+// BBlobTracker
+// OSC Puerto: 12345
+// OSC ip: 127.0.0.1
 
 
 int PUERTO_OSC  = 12345 ;
@@ -84,7 +92,7 @@ void setup() {
   mundo.setEdges(0, 0, 1000, 1000);
   mundo.setGravity(0, 800);
 
-  //------------PLATAFORMAS----------   // NOTA: Podríamos ponerle una imagen a las plataformas
+  //------------PLATAFORMAS----------   //
   plataforma = new Plataforma (600, 40);
   plataforma.inicializar(200, height-20);
   mundo.add(plataforma);
@@ -104,10 +112,10 @@ void setup() {
 
   //-----------ANDAMIOS-----------     
   andamio = new Andamio(tamax, tamay);
-  andamio.inicializar(andamioX, andamioY);
+  andamio.inicializar(andamioX2, andamioY);
   mundo.add(andamio);
   andamio2 = new Andamio(tamax, tamay);
-  andamio2.inicializar(andamioX2, andamioY);
+  andamio2.inicializar(andamioX, andamioY);
   mundo.add(andamio2);
 
   f = 0.9;
@@ -138,7 +146,7 @@ void draw() {
   receptor.actualizar(mensajes);
   mundo.step();
 
-  boolean hayBlobEnPantalla = false; //-->(NO es que quiera poner este boolean en el draw, es que sino no funciona. No me preguntes por qué. No lo sé)
+  boolean hayBlobEnPantalla = false; 
 
   logica.cambiarEstado(hayBlobEnPantalla, ultimaPosicionBlobDesaparecidoX, ultimaPosicionBlobDesaparecidoY);
   logica.actualizar();
@@ -179,7 +187,7 @@ void draw() {
   println("hay blob: "+hayBlobEnPantalla);
   println("estado: "+logica.estadoActual);
   println("luz: "+salioLuz);  
-  println("telaraña: "+telarana.telaranaLanzada);
+ println("telaraña: "+telarana.telaranaLanzada);
 
 
   //------------CON ESTE CÓDIGO FUNCIONA LA CÁMARA SIN EL PGRAPHICS, PERO HAY QUE AJUSTAR LOS PARÁMETROS PORQUE SE VA A LA MIERDA------------
@@ -207,7 +215,21 @@ void mousePressed() {
     sonidoPerdiste.stop();
     sonidoWiii.stop();
   }
-  if ((logica.estadoActual == 3 || logica.estadoActual == 4) && (mouseX > (width/2+320)-50 && mouseX < (width/2+320)+50 && mouseY > (90)-25 && mouseY < (90)+25)) {
+  if (logica.estadoActual == 3 && (mouseX > (width/2+347)-124 && mouseX < (width/2+347)+124 && mouseY > (170)-35 && mouseY < (170)+35)) {
+    logica.estadoActual = 1;
+
+    // Sonido
+    sonidoInicio.stop();
+    sonidoAmbiente.play();
+    sonidoGanaste.stop();
+    sonidoLanzaTelarana.stop();
+    sonidoCaida.stop();
+    sonidoCaePlataforma.stop();
+    sonidoEmbocaAndamio.stop();
+    sonidoPerdiste.stop();
+    sonidoWiii.stop();
+  }
+  if (logica.estadoActual == 4 && (mouseX > (width/2+360)-124 && mouseX < (width/2+360)+124 && mouseY > (240)-35 && mouseY < (240)+35)) {
     logica.estadoActual = 1;
 
     // Sonido
@@ -240,99 +262,3 @@ void contactStarted(FContact contact) {
     }
   }
 }
-
-
-//  -------SONIDOS-------
-
-//void keyPressed() {
-//  if (key == 'a') {       //AMBIENTE
-//    sonidoInicio.stop();
-//    sonidoAmbiente.play();
-//    sonidoGanaste.stop();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoPerdiste.stop();
-//    sonidoWiii.stop();
-//  } else if (key == 'b') {  //INICIO
-//    sonidoInicio.play();
-//    sonidoAmbiente.stop();
-//    sonidoGanaste.stop();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoPerdiste.stop();
-//    sonidoWiii.stop();
-//  } else if (key == 'c') { //GANASTE -- ACORTAR
-//    sonidoInicio.stop();
-//    sonidoAmbiente.stop();
-//    sonidoGanaste.play();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoPerdiste.stop();
-//    sonidoWiii.stop();
-//  } else if (key == 'd') {  //CAIDA
-//    sonidoInicio.stop();    
-//    sonidoAmbiente.stop();
-//    sonidoGanaste.stop();
-//    sonidoCaida.play();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoPerdiste.stop();
-//    sonidoWiii.stop();
-//  } else if (key == 'e') {  //LANZATELARAÑA -- ACORTAR
-//    sonidoInicio.stop();
-//    //sonidoAmbiente.stop();
-//    sonidoGanaste.stop();
-//    sonidoLanzaTelarana.play();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoWiii.stop();
-//  } else if (key == 'f') {  //CAE PLATAFORMA
-//    sonidoInicio.stop();
-//    sonidoAmbiente.stop();
-//    sonidoGanaste.stop();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.play();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoPerdiste.stop();
-//    sonidoWiii.stop();
-//  } else if (key == 'g') {  //EMBOCA ANDAMIO
-//    sonidoInicio.stop();
-//    sonidoAmbiente.stop();
-//    sonidoGanaste.stop();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.play();
-//    sonidoPerdiste.stop();
-//    sonidoWiii.stop();
-//  } else if (key == 'h') {  //PERDISTE
-//    sonidoInicio.stop();
-//    sonidoAmbiente.stop();
-//    sonidoGanaste.stop();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoPerdiste.play();
-//    sonidoWiii.stop();
-//  } else if (key == 'i') {  //WIII -- ACORTAR
-//    sonidoInicio.stop();
-//    sonidoAmbiente.stop();
-//    sonidoGanaste.stop();
-//    sonidoLanzaTelarana.stop();
-//    sonidoCaida.stop();
-//    sonidoCaePlataforma.stop();
-//    sonidoEmbocaAndamio.stop();
-//    sonidoPerdiste.stop();
-//    sonidoWiii.play();
-//  }
-//}
